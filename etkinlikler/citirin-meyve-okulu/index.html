@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Çıtır'ın Meyve Okulu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Yerleşim: solda robot Çıtır ve meyve bandı (sahne), sağda "Çıtır'ın Beyni" haritası; üstte adım sekmeleri. Akıllı tahtada uzaktan okunacak büyüklükte. */
+:root{
+  --zemin:#eaf2ee;          /* laboratuvar nane yeşili */
+  --yuzey:#ffffff;
+  --yuzey-2:#f4f8f6;
+  --murekkep:#1c2b33;
+  --soluk:#55656d;
+  --cizgi:#cfdcd6;
+  --robot:#1f8a8a;          /* Çıtır'ın gövdesi */
+  --robot-koyu:#146266;
+  --vurgu:#ff7a3d;          /* düğme ve seçim vurgusu */
+  --elma:#d8433a;
+  --limon:#d9a600;
+  --muz:#6d56c9;
+  --dogru:#2e8b57;
+  --yanlis:#c2412d;
+  --golge:0 6px 22px rgba(28,43,51,.10);
+  --f-baslik:"Fredoka","Trebuchet MS","Segoe UI",sans-serif;
+  --f-metin:"Nunito","Verdana","Segoe UI",sans-serif;
+  --f-sayi:"JetBrains Mono","Consolas","Courier New",monospace;
+  --t-s:clamp(14px,1.05vw,16px);
+  --t-m:clamp(16px,1.3vw,20px);
+  --t-l:clamp(20px,1.8vw,28px);
+  --t-xl:clamp(26px,2.6vw,40px);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --zemin:#101a1e; --yuzey:#18252a; --yuzey-2:#1e2d33; --murekkep:#e6f0ec; --soluk:#9fb2b8; --cizgi:#2d3f45;
+  --robot:#35b0ad; --robot-koyu:#1f7f7e; --vurgu:#ff8c55; --elma:#f0675d; --limon:#f2c230; --muz:#9c86ff; --dogru:#4cc184; --yanlis:#f07a63;
+  --golge:0 6px 22px rgba(0,0,0,.35); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --zemin:#101a1e; --yuzey:#18252a; --yuzey-2:#1e2d33; --murekkep:#e6f0ec; --soluk:#9fb2b8; --cizgi:#2d3f45;
+  --robot:#35b0ad; --robot-koyu:#1f7f7e; --vurgu:#ff8c55; --elma:#f0675d; --limon:#f2c230; --muz:#9c86ff; --dogru:#4cc184; --yanlis:#f07a63;
+  --golge:0 6px 22px rgba(0,0,0,.35); color-scheme:dark }
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;background:var(--zemin);color:var(--murekkep);font-family:var(--f-metin);font-size:var(--t-m);line-height:1.5;padding-inline:16px;padding-block:12px 24px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,canvas:focus-visible{outline:3px solid var(--vurgu);outline-offset:2px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.kap{max-width:1500px;margin:0 auto;display:grid;gap:14px}
+
+/* üst bar */
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px;justify-content:space-between}
+.marka{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.marka h1{font-family:var(--f-baslik);font-weight:700;font-size:var(--t-xl);margin:0;line-height:1;text-wrap:balance}
+.marka span{color:var(--soluk);font-size:var(--t-s);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+nav.adimlar{display:flex;gap:6px;flex-wrap:wrap}
+.adim{display:flex;align-items:center;gap:8px;min-height:48px;padding:6px 14px 6px 8px;border:2px solid var(--cizgi);border-radius:999px;background:var(--yuzey);font-weight:800;font-size:var(--t-s)}
+.adim .no{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--yuzey-2);font-family:var(--f-sayi);font-size:14px}
+.adim[aria-current="step"]{border-color:var(--robot);background:var(--robot);color:#fff}
+.adim[aria-current="step"] .no{background:rgba(255,255,255,.22);color:#fff}
+
+/* ana ızgara */
+main{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:14px;align-items:start}
+@media (max-width:980px){main{grid-template-columns:1fr}}
+.panel{background:var(--yuzey);border-radius:18px;box-shadow:var(--golge);padding:16px;min-width:0}
+.panel h2{font-family:var(--f-baslik);font-weight:600;font-size:var(--t-l);margin:0 0 8px;line-height:1.15}
+
+/* sahne */
+.sahne{display:grid;gap:14px}
+.robotSatir{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start}
+#robot{width:clamp(96px,10vw,150px);height:auto;display:block}
+.balon{position:relative;background:var(--yuzey-2);border:2px solid var(--cizgi);border-radius:16px;padding:12px 16px;min-height:96px;font-size:var(--t-m)}
+.balon::before{content:"";position:absolute;left:-11px;top:28px;width:18px;height:18px;background:var(--yuzey-2);border-left:2px solid var(--cizgi);border-bottom:2px solid var(--cizgi);transform:rotate(45deg)}
+.balon p{margin:0}
+.balon p+p{margin-top:6px}
+.balon b{color:var(--robot-koyu)}
+:root[data-theme="dark"] .balon b{color:var(--robot)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .balon b{color:var(--robot)}}
+
+.bant{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:stretch}
+@media (max-width:560px){.bant{grid-template-columns:1fr}}
+.meyveKutu{position:relative;background:repeating-linear-gradient(90deg,var(--yuzey-2) 0 22px,color-mix(in srgb,var(--yuzey-2) 70%,var(--cizgi)) 22px 44px);border-radius:14px;display:grid;place-items:center;min-height:210px;overflow:hidden}
+.meyveKutu svg{width:min(190px,80%);height:auto;transition:transform .45s cubic-bezier(.2,.9,.3,1.3)}
+.meyveKutu.gel svg{animation:gel .5s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes gel{from{transform:translateX(-120%) rotate(-25deg)}to{transform:none}}
+.meyveKutu .etiket{position:absolute;left:10px;top:10px;font-family:var(--f-sayi);font-size:13px;font-weight:700;color:var(--soluk);background:var(--yuzey);padding:2px 8px;border-radius:6px}
+.goz{background:var(--yuzey-2);border-radius:14px;padding:12px 14px;display:grid;gap:10px;align-content:start}
+.goz h3{margin:0;font-family:var(--f-baslik);font-weight:600;font-size:var(--t-m);display:flex;gap:8px;align-items:center}
+.goz .not{font-size:var(--t-s);color:var(--soluk);margin:0}
+.olcu{display:grid;gap:4px}
+.olcu .ust{display:flex;justify-content:space-between;font-weight:800;font-size:var(--t-s)}
+.olcu .ust span:last-child{font-family:var(--f-sayi);font-variant-numeric:tabular-nums}
+.cubuk{position:relative;height:18px;border-radius:9px;background:var(--cizgi)}
+.cubuk.renk{background:linear-gradient(90deg,hsl(2,78%,52%),hsl(48,92%,55%),hsl(100,55%,45%))}
+.cubuk i{position:absolute;top:-5px;width:6px;height:28px;border-radius:3px;background:var(--murekkep);transform:translateX(-50%);transition:left .4s}
+.cubuk .uclar{position:absolute;inset:auto 0 -20px 0;display:flex;justify-content:space-between;font-size:12px;color:var(--soluk)}
+.olcu{padding-bottom:14px}
+
+.eylem{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{min-height:52px;padding:10px 18px;border-radius:14px;border:2px solid var(--murekkep);background:var(--yuzey);font-weight:800;font-size:var(--t-m)}
+.btn.ana{background:var(--vurgu);border-color:var(--vurgu);color:#fff}
+.btn.hafif{border-color:var(--cizgi)}
+.btn:not(:disabled):hover{transform:translateY(-1px)}
+.sepetler{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.sepet{min-height:84px;border-radius:16px;border:3px solid var(--k);background:var(--yuzey);display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--f-baslik);font-weight:600;font-size:var(--t-l);padding:8px}
+.sepet svg{width:48px;height:48px;flex:none}
+.sepet:not(:disabled):hover{background:color-mix(in srgb,var(--k) 12%,var(--yuzey))}
+.sepet .say{font-family:var(--f-sayi);font-size:14px;color:var(--soluk)}
+@media (max-width:560px){.sepet{flex-direction:column;gap:2px;font-size:var(--t-m)}.sepet svg{width:38px;height:38px}}
+
+.karne{display:flex;gap:10px;flex-wrap:wrap}
+.karne div{flex:1 1 120px;background:var(--yuzey-2);border-radius:12px;padding:8px 12px}
+.karne b{display:block;font-family:var(--f-sayi);font-size:var(--t-l);font-variant-numeric:tabular-nums}
+.karne span{font-size:var(--t-s);color:var(--soluk);font-weight:700}
+.sonuc{border-radius:14px;padding:10px 14px;font-weight:800;display:flex;gap:10px;align-items:center}
+.sonuc.d{background:color-mix(in srgb,var(--dogru) 16%,var(--yuzey));color:var(--dogru)}
+.sonuc.y{background:color-mix(in srgb,var(--yanlis) 16%,var(--yuzey));color:var(--yanlis)}
+
+/* beyin */
+.beyin{display:grid;gap:10px}
+.beyinBas{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.beyinBas p{margin:0;color:var(--soluk);font-size:var(--t-s);max-width:60ch}
+.haritaKap{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:6px}
+.eksenY{grid-row:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.eksenY .serit{flex:1;width:14px;border-radius:7px;background:linear-gradient(180deg,hsl(2,78%,52%),hsl(48,92%,55%),hsl(100,55%,45%));min-height:120px}
+.eksenY b{writing-mode:vertical-rl;transform:rotate(180deg);font-size:var(--t-s)}
+.eksenX{grid-column:2;display:flex;justify-content:space-between;align-items:center;font-size:var(--t-s);font-weight:700;color:var(--soluk)}
+.eksenX b{color:var(--murekkep)}
+#harita{width:100%;aspect-ratio:1.25/1;max-width:100%;display:block;border-radius:12px;background:var(--yuzey-2);touch-action:manipulation;cursor:crosshair}
+.lejant{display:flex;gap:16px;flex-wrap:wrap;font-weight:800;font-size:var(--t-s)}
+.lejant span{display:flex;gap:6px;align-items:center}
+.lejant i{width:16px;height:16px;border-radius:4px;background:var(--k)}
+.anahtar{display:flex;align-items:center;gap:8px;font-weight:800;font-size:var(--t-s)}
+.anahtar input{width:22px;height:22px;accent-color:var(--robot)}
+
+/* deney kartları */
+.deneyler{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.deney{border:2px solid var(--cizgi);border-radius:14px;padding:12px;display:grid;gap:8px;align-content:start;background:var(--yuzey)}
+.deney[aria-current="true"]{border-color:var(--vurgu)}
+.deney h3{margin:0;font-family:var(--f-baslik);font-weight:600;font-size:var(--t-m)}
+.deney p{margin:0;font-size:var(--t-s);color:var(--soluk)}
+.cubukGrafik{display:grid;gap:8px}
+.cubukGrafik .sat{display:grid;grid-template-columns:minmax(90px,auto) minmax(0,1fr) auto;gap:10px;align-items:center;font-weight:800;font-size:var(--t-s)}
+.cubukGrafik .ic{height:22px;border-radius:6px;background:var(--cizgi);overflow:hidden}
+.cubukGrafik .ic i{display:block;height:100%;background:var(--robot);width:0;transition:width .8s}
+.cubukGrafik .sat span:last-child{font-family:var(--f-sayi);font-variant-numeric:tabular-nums}
+
+.ozet ol{margin:0;padding-left:1.3em;display:grid;gap:8px;max-width:70ch}
+.ozet li::marker{font-family:var(--f-sayi);color:var(--robot);font-weight:700}
+.ozet .gercek{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
+.ozet .gercek div{background:var(--yuzey-2);border-radius:12px;padding:10px 12px;font-size:var(--t-s)}
+.ozet .gercek b{display:block;font-family:var(--f-baslik);font-weight:600;font-size:var(--t-m)}
+.kucuk{font-size:var(--t-s);color:var(--soluk)}
+.link{background:none;border:0;padding:0;color:var(--robot-koyu);text-decoration:underline;font-weight:800;font-size:var(--t-s)}
+:root[data-theme="dark"] .link{color:var(--robot)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .link{color:var(--robot)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="kap">
+  <header>
+    <div class="marka"><h1>Çıtır'ın Meyve Okulu</h1><span>Makine öğrenmesi · 5. sınıf</span></div>
+    <nav class="adimlar" id="adimlar" aria-label="Adımlar"></nav>
+  </header>
+
+  <main>
+    <section class="panel sahne" aria-label="Çıtır ve meyve bandı">
+      <div class="robotSatir">
+        <svg id="robot" viewBox="0 0 120 150" aria-hidden="true">
+          <line x1="60" y1="8" x2="60" y2="26" stroke="var(--robot-koyu)" stroke-width="4" stroke-linecap="round"/>
+          <circle id="rAnten" cx="60" cy="8" r="7" fill="var(--vurgu)"/>
+          <rect x="14" y="24" width="92" height="74" rx="22" fill="var(--robot)"/>
+          <rect x="24" y="34" width="72" height="50" rx="14" fill="#10262b"/>
+          <g id="rYuz" fill="#7df3e1" stroke="#7df3e1"></g>
+          <rect x="4" y="50" width="12" height="24" rx="6" fill="var(--robot-koyu)"/>
+          <rect x="104" y="50" width="12" height="24" rx="6" fill="var(--robot-koyu)"/>
+          <rect x="30" y="100" width="60" height="38" rx="12" fill="var(--robot-koyu)"/>
+          <rect x="44" y="110" width="32" height="8" rx="4" fill="var(--robot)"/>
+          <circle cx="48" cy="126" r="4" fill="var(--vurgu)"/><circle cx="60" cy="126" r="4" fill="#7df3e1"/><circle cx="72" cy="126" r="4" fill="var(--limon)"/>
+        </svg>
+        <div class="balon" id="balon" aria-live="polite"></div>
+      </div>
+
+      <div class="bant">
+        <div class="meyveKutu" id="meyveKutu"><span class="etiket" id="meyveEtiket">MEYVE BANDI</span><div id="meyveYer"></div></div>
+        <div class="goz" aria-label="Çıtır'ın gördükleri">
+          <h3><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Çıtır'ın gördüğü</h3>
+          <p class="not">Çıtır resmi görmez. Yalnızca iki ölçüm yapar.</p>
+          <div class="olcu"><div class="ust"><span>Uzunluk</span><span id="gUzun">–</span></div><div class="cubuk"><i id="gUzunI" style="left:50%"></i><div class="uclar"><span>yuvarlak</span><span>uzun</span></div></div></div>
+          <div class="olcu"><div class="ust"><span>Renk</span><span id="gRenk">–</span></div><div class="cubuk renk"><i id="gRenkI" style="left:50%"></i><div class="uclar"><span>kırmızı</span><span>sarı</span><span>yeşil</span></div></div></div>
+        </div>
+      </div>
+
+      <div id="kontrol" class="sahne"></div>
+    </section>
+
+    <section class="panel beyin" aria-label="Çıtır'ın Beyni">
+      <div class="beyinBas">
+        <div><h2>Çıtır'ın Beyni</h2><p id="beyinNot">Öğrettiğin her meyve bu haritada bir nokta olur. Renkli bölgeler Çıtır'ın tahminleridir.</p></div>
+        <label class="anahtar"><input type="checkbox" id="bolgeGoster" checked>Bölgeleri göster</label>
+      </div>
+      <div class="haritaKap">
+        <div class="eksenY"><b>Renk</b><div class="serit"></div></div>
+        <canvas id="harita" tabindex="0" aria-label="Çıtır'ın beyin haritası. Yatay eksen uzunluk, dikey eksen renk. Haritaya dokunarak hayalî bir meyve sorabilirsin."></canvas>
+        <div class="eksenX"><span>yuvarlak</span><b>Uzunluk</b><span>uzun</span></div>
+      </div>
+      <div class="lejant" id="lejant"></div>
+      <p class="kucuk" id="haritaIpucu">İpucu: Haritada bir yere dokun, Çıtır oradaki hayalî meyveyi tahmin etsin.</p>
+    </section>
+  </main>
+</div>
+
+<script>
+/* =====================================================================
+   ÖĞRETMEN İÇİN: Çıtır'ın bütün konuşmaları bu METIN nesnesindedir.
+   Tırnak içindeki yazıları değiştirebilirsin.
+   ===================================================================== */
+const METIN = {
+  adimlar: ["Tanış", "Öğret", "Sına", "Deney yap", "Ne öğrendik?"],
+  tanis: [
+    "Merhaba, ben <b>Çıtır</b>! Meyveleri sepetlere ayırmayı öğrenmek istiyorum: <b>elma</b>, <b>limon</b> ve <b>muz</b>.",
+    "Ama henüz hiçbir şey bilmiyorum. Bir meyve getir, tahmin etmeye çalışayım."
+  ],
+  tanisBilmiyor: [
+    "Hmm... Bu ne? Hiç örnek görmedim, <b>bilemiyorum</b>!",
+    "Ben resimleri senin gibi görmüyorum. Yalnızca iki şeyi ölçüyorum: meyve <b>ne kadar uzun</b> ve <b>ne renk</b>. Bu ölçümlere <b>özellik</b> denir.",
+    "Bana örnekler gösterip hangisinin ne olduğunu söylersen öğrenebilirim. Hadi başlayalım!"
+  ],
+  ogret: "Banttaki meyveye bak ve onu doğru sepete koy. Her meyve benim için bir <b>örnek</b>, sepetin adı da onun <b>etiketi</b>.",
+  ogretAdim: {
+    1: "İlk örneğim! Sağdaki haritaya bak: bu meyve orada bir nokta oldu.",
+    3: "Haritada renkli bölgeler oluşmaya başladı. Onlar benim tahminlerim.",
+    6: "Artık bir şeyler anlamaya başladım. Birkaç örnek daha gösterir misin?",
+    12: "Bence hazırım! İstersen beni <b>sınayabilirsin</b>. Ya da daha çok örnek göster."
+  },
+  ogretSonra: "Teşekkürler! Bunu hafızama ekledim.",
+  sina: "Şimdi sana hiç görmediğim meyveler getireceğim. Bakalım ne kadarını bileceğim?",
+  sinaNeden: (k, sayilar, tahmin) => `Haritada buna en çok benzeyen <b>${k}</b> örneğe baktım: ${sayilar}. Çoğu <b>${tahmin}</b> olduğu için “${tahmin}” dedim.`,
+  sinaDogru: "Bildim!",
+  sinaYanlis: "Yanıldım! Buna benzeyen yeterince örnek görmemişim. Doğrusunu öğretirsen bir dahakine bilirim.",
+  hayal: "Bu, haritada hayal ettiğin bir meyve.",
+  deneyGiris: "Bilim insanları gibi deney yapalım. Bir deney seç. Dikkat: deney benim hafızamı değiştirir.",
+  ozetBaslik: "Makine öğrenmesi nasıl çalışır?",
+  ozet: [
+    "<b>Makine öğrenmesi</b>, bilgisayarın her şeyi tek tek anlatmadan <b>örneklerden öğrenmesidir</b>.",
+    "Bilgisayar örneklerin tamamını değil, bazı <b>özelliklerini</b> ölçer. Çıtır yalnızca uzunluğa ve renge baktı.",
+    "Her örneğin bir <b>etiketi</b> vardır. Etiketleri insanlar verir. Etiket yanlışsa makine de yanlış öğrenir.",
+    "Makine yeni bir şey görünce onu öğrendiği <b>en benzer örneklerle karşılaştırır</b> ve bir <b>tahmin</b> yapar.",
+    "Tahmin her zaman doğru değildir. <b>Daha çok</b> ve <b>daha çeşitli</b> örnekler tahminleri iyileştirir."
+  ],
+  gercek: [
+    ["İstenmeyen e-posta", "E-posta uygulaması, insanların “istenmeyen” diye işaretlediği binlerce örnekten öğrenir."],
+    ["Fotoğraf albümü", "Telefon, fotoğraflardaki yüzleri benzerliklerine göre gruplar."],
+    ["Öneriler", "Video uygulaması, izlediklerine benzeyen videoları önerir."]
+  ]
+};
+</script>
+
+<script>
+(() => {
+const $ = (s) => document.querySelector(s);
+const AZ = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TUR = { elma: { ad: 'Elma', sepet: 'Elma' }, limon: { ad: 'Limon', sepet: 'Limon' }, muz: { ad: 'Muz', sepet: 'Muz' } };
+const TURLER = ['elma', 'limon', 'muz'];
+const renkVar = (t) => getComputedStyle(document.documentElement).getPropertyValue('--' + t).trim();
+
+// ---------- rastgele ve meyve üretimi ----------
+let tohum = (Date.now() ^ 0x5f3759df) >>> 0;
+const rnd = () => { tohum = (tohum + 0x6D2B79F5) | 0; let t = Math.imul(tohum ^ tohum >>> 15, 1 | tohum); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const R = (a, b) => a + (b - a) * rnd();
+const kirp = (v) => Math.max(0, Math.min(1, v));
+// s: uzunluk (0 yuvarlak, 1 uzun), c: renk (0 kırmızı, 0.5 sarı, 1 yeşil)
+function meyveUret(tur, secenek = {}) {
+  if (tur === 'elma') {
+    const yesil = secenek.yesil ?? (secenek.kirmizi ? false : rnd() < 0.4);
+    return { tur, s: R(0.04, 0.24), c: yesil ? R(0.8, 0.98) : R(0.02, 0.2) };
+  }
+  if (tur === 'limon') return { tur, s: R(0.32, 0.52), c: rnd() < 0.8 ? R(0.42, 0.58) : R(0.6, 0.7) };
+  return { tur, s: R(0.7, 0.97), c: rnd() < 0.75 ? R(0.4, 0.6) : R(0.66, 0.82) };
+}
+// Torba: her üç meyvede bir elma, bir limon, bir muz gelir (sıra karışık); böylece örnekler dengeli olur.
+let torba = [];
+const rastgeleTur = () => { if (!torba.length) { torba = TURLER.slice(); for (let i = 2; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [torba[i], torba[j]] = [torba[j], torba[i]]; } } return torba.pop(); };
+function renkHsl(c) { const h = c < 0.5 ? 2 + (48 - 2) * c * 2 : 48 + (100 - 48) * (c - 0.5) * 2; const l = c < 0.5 ? 52 + 3 * c * 2 : 55 - 10 * (c - 0.5) * 2; const sat = c < 0.5 ? 78 + 14 * c * 2 : 92 - 37 * (c - 0.5) * 2; return `hsl(${h.toFixed(0)},${sat.toFixed(0)}%,${l.toFixed(0)}%)`; }
+function renkAdi(c) { if (c < 0.15) return 'kırmızı'; if (c < 0.35) return 'turuncu'; if (c < 0.62) return 'sarı'; if (c < 0.8) return 'sarı-yeşil'; return 'yeşil'; }
+
+function meyveSVG(m, boyut = 100) {
+  const f = renkHsl(m.c);
+  let govde = '';
+  if (m.tur === 'elma') {
+    const sx = 1 - m.s * 0.4;
+    govde = `<g transform="translate(50 56) scale(${sx.toFixed(2)} 1) translate(-50 -56)"><path d="M50 30 C 32 16, 8 28, 13 56 C 18 84, 40 94, 50 86 C 60 94, 82 84, 87 56 C 92 28, 68 16, 50 30 Z" fill="${f}" stroke="rgba(0,0,0,.25)" stroke-width="2"/><ellipse cx="34" cy="48" rx="7" ry="11" fill="#fff" opacity=".35"/></g><path d="M50 32 C 50 22, 52 16, 56 10" stroke="#6b4a2b" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M55 16 C 64 6, 76 10, 78 14 C 70 22, 60 22, 55 16 Z" fill="#4f9a3f"/>`;
+  } else if (m.tur === 'limon') {
+    const sx = 0.85 + (m.s - 0.3) * 0.9;
+    govde = `<g transform="translate(50 52) scale(${sx.toFixed(2)} 1) translate(-50 -52)"><path d="M10 52 Q 12 40, 22 34 Q 36 24, 50 24 Q 64 24, 78 34 Q 88 40, 90 52 Q 88 64, 78 70 Q 64 80, 50 80 Q 36 80, 22 70 Q 12 64, 10 52 Z" fill="${f}" stroke="rgba(0,0,0,.22)" stroke-width="2"/><path d="M4 52 Q 8 47, 11 52 Q 8 57, 4 52 Z M96 52 Q 92 47, 89 52 Q 92 57, 96 52 Z" fill="${f}" stroke="rgba(0,0,0,.22)" stroke-width="1.5"/><ellipse cx="36" cy="42" rx="10" ry="6" fill="#fff" opacity=".35"/></g>`;
+  } else if (m.tur === 'muz') {
+    const k = 0.8 + (m.s - 0.7) * 0.8;
+    govde = `<g transform="translate(50 50) scale(${k.toFixed(2)}) translate(-50 -50)"><path d="M10 36 Q 46 92, 90 30 Q 92 26, 88 24 Q 50 70, 16 30 Q 12 30, 10 36 Z" fill="${f}" stroke="rgba(0,0,0,.25)" stroke-width="2"/><path d="M86 25 L 94 16" stroke="#6b4a2b" stroke-width="5" stroke-linecap="round"/><path d="M11 35 L 7 38" stroke="#3a2a1a" stroke-width="4" stroke-linecap="round"/><path d="M22 42 Q 48 70, 78 40" stroke="#fff" stroke-width="3" fill="none" opacity=".35"/></g>`;
+  } else {
+    const rx = 22 + m.s * 24, ry = 30 - m.s * 14;
+    govde = `<ellipse cx="50" cy="54" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="${f}" stroke="rgba(0,0,0,.25)" stroke-width="2" stroke-dasharray="5 4"/><text x="50" y="64" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="30" font-weight="700" fill="rgba(0,0,0,.45)">?</text>`;
+  }
+  return `<svg viewBox="0 0 100 100" width="${boyut}" height="${boyut}" role="img" aria-label="${m.tur === 'hayal' ? 'hayalî meyve' : TUR[m.tur].ad}">${govde}</svg>`;
+}
+
+// ---------- Çıtır'ın beyni: en yakın komşular ----------
+let hafiza = [];
+const K = 3;
+function komsular(p, k = K) {
+  return hafiza.map(h => ({ h, d: Math.hypot(h.s - p.s, h.c - p.c) })).sort((a, b) => a.d - b.d).slice(0, Math.min(k, hafiza.length));
+}
+function tahmin(p) {
+  if (!hafiza.length) return null;
+  const ks = komsular(p);
+  const oy = { elma: 0, limon: 0, muz: 0 };
+  ks.forEach((x, i) => { oy[x.h.etiket] += 1 + (i === 0 ? 0.01 : 0); });
+  const sonuc = TURLER.reduce((a, b) => oy[a] >= oy[b] ? a : b);
+  return { tur: sonuc, ks, oy };
+}
+
+// ---------- harita ----------
+const cv = $('#harita'), g = cv.getContext('2d');
+let vurgulu = null; // {p, ks}
+function haritaBoyut() { const r = cv.getBoundingClientRect(); const dpr = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); ciz(); }
+const PAD = 14;
+const X = (s) => PAD + s * (cv.width - PAD * 2);
+const Y = (c) => PAD + c * (cv.height - PAD * 2);
+function renkAlfa(hex, a) { const c = hex.replace('#', ''); const n = parseInt(c.length === 3 ? c.split('').map(x => x + x).join('') : c, 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`; }
+function ikon(m, x, y, r, cerceve) {
+  g.save(); g.translate(x, y);
+  g.fillStyle = renkHsl(m.c); g.strokeStyle = cerceve; g.lineWidth = Math.max(2, r * 0.28);
+  g.beginPath();
+  if (m.gorunum === 'limon') g.ellipse(0, 0, r * 1.25, r * 0.85, 0, 0, Math.PI * 2);
+  if (m.gorunum === 'muz') { g.ellipse(0, 0, r * 1.45, r * 0.6, -0.35, 0, Math.PI * 2); }
+  if (m.gorunum === 'elma') g.arc(0, 0, r, 0, Math.PI * 2);
+  g.fill(); g.stroke(); g.restore();
+}
+function ciz() {
+  const W = cv.width, H = cv.height; g.clearRect(0, 0, W, H);
+  const cz = renkVar('cizgi');
+  // bölgeler
+  if ($('#bolgeGoster').checked && hafiza.length) {
+    const N = 46, cw = (W - PAD * 2) / N, ch = (H - PAD * 2) / N;
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+      const p = { s: (i + 0.5) / N, c: (j + 0.5) / N }; const t = tahmin(p);
+      const x0 = Math.round(PAD + i * cw), x1 = Math.round(PAD + (i + 1) * cw), y0 = Math.round(PAD + j * ch), y1 = Math.round(PAD + (j + 1) * ch);
+      g.fillStyle = renkAlfa(renkVar(t.tur), 0.22); g.fillRect(x0, y0, x1 - x0, y1 - y0);
+    }
+  }
+  // ızgara
+  g.strokeStyle = renkAlfa(cz.startsWith('#') ? cz : '#cfdcd6', 0.9); g.lineWidth = 1;
+  for (let k = 0; k <= 4; k++) { g.beginPath(); g.moveTo(X(k / 4), PAD); g.lineTo(X(k / 4), H - PAD); g.stroke(); g.beginPath(); g.moveTo(PAD, Y(k / 4)); g.lineTo(W - PAD, Y(k / 4)); g.stroke(); }
+  const r = Math.max(7, W / 70);
+  // komşu çizgileri
+  if (vurgulu) {
+    g.setLineDash([6, 5]); g.lineWidth = Math.max(2, W / 400); g.strokeStyle = renkVar('murekkep');
+    vurgulu.ks.forEach(x => { g.beginPath(); g.moveTo(X(vurgulu.p.s), Y(vurgulu.p.c)); g.lineTo(X(x.h.s), Y(x.h.c)); g.stroke(); });
+    g.setLineDash([]);
+    if (vurgulu.ks.length) { const R0 = vurgulu.ks[vurgulu.ks.length - 1].d; g.beginPath(); g.strokeStyle = renkAlfa(renkVar('vurgu').startsWith('#') ? renkVar('vurgu') : '#ff7a3d', 0.7); g.lineWidth = 2; g.ellipse(X(vurgulu.p.s), Y(vurgulu.p.c), R0 * (W - PAD * 2) + r, R0 * (H - PAD * 2) + r, 0, 0, Math.PI * 2); g.stroke(); }
+  }
+  // örnekler
+  hafiza.forEach(h => { const yakin = vurgulu && vurgulu.ks.some(x => x.h === h); ikon({ c: h.c, gorunum: h.gorunum }, X(h.s), Y(h.c), yakin ? r * 1.35 : r, renkVar(h.etiket)); });
+  // sorulan meyve
+  if (vurgulu) {
+    const x = X(vurgulu.p.s), y = Y(vurgulu.p.c);
+    g.fillStyle = renkVar('yuzey'); g.strokeStyle = renkVar('murekkep'); g.lineWidth = 3;
+    g.beginPath(); g.arc(x, y, r * 1.6, 0, Math.PI * 2); g.fill(); g.stroke();
+    g.fillStyle = renkVar('murekkep'); g.font = `700 ${Math.round(r * 2)}px Fredoka, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('?', x, y + 1);
+  }
+  if (!hafiza.length) {
+    g.fillStyle = renkVar('soluk'); g.font = `700 ${Math.round(W / 34)}px Nunito, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText('Hafıza boş. Henüz hiç örnek yok.', W / 2, H / 2);
+  }
+}
+function lejant() {
+  $('#lejant').innerHTML = TURLER.map(t => `<span style="--k:var(--${t})"><i></i>${TUR[t].ad} <span class="kucuk">(${hafiza.filter(h => h.etiket === t).length})</span></span>`).join('');
+}
+function hafizaEkle(m, etiket) { hafiza.push({ s: m.s, c: m.c, etiket, gorunum: m.tur }); lejant(); ciz(); }
+
+// ---------- robot yüzü ----------
+function yuz(durum) {
+  const y = $('#rYuz');
+  const goz = {
+    normal: '<rect x="38" y="48" width="12" height="14" rx="4"/><rect x="70" y="48" width="12" height="14" rx="4"/>',
+    mutlu: '<path d="M37 58 Q44 48 51 58" fill="none" stroke-width="4" stroke-linecap="round"/><path d="M69 58 Q76 48 83 58" fill="none" stroke-width="4" stroke-linecap="round"/>',
+    dusun: '<rect x="38" y="52" width="12" height="6" rx="3"/><rect x="70" y="46" width="12" height="14" rx="4"/>',
+    sasir: '<circle cx="44" cy="55" r="8" fill="none" stroke-width="4"/><circle cx="76" cy="55" r="8" fill="none" stroke-width="4"/>'
+  }[durum];
+  const agiz = { normal: '<path d="M52 72 Q60 76 68 72" fill="none" stroke-width="3" stroke-linecap="round"/>', mutlu: '<path d="M48 70 Q60 80 72 70" fill="none" stroke-width="3" stroke-linecap="round"/>', dusun: '<path d="M52 74 L68 72" fill="none" stroke-width="3" stroke-linecap="round"/>', sasir: '<circle cx="60" cy="74" r="4" fill="none" stroke-width="3"/>' }[durum];
+  y.innerHTML = goz + agiz;
+  $('#rAnten').style.fill = durum === 'dusun' ? 'var(--limon)' : 'var(--vurgu)';
+}
+function konus(satirlar, durum = 'normal') { $('#balon').innerHTML = (Array.isArray(satirlar) ? satirlar : [satirlar]).map(s => `<p>${s}</p>`).join(''); yuz(durum); }
+
+// ---------- meyve bandı ----------
+let simdiki = null;
+function bandaKoy(m, etiket) {
+  simdiki = m;
+  const k = $('#meyveKutu'); k.classList.remove('gel'); void k.offsetWidth; if (!AZ) k.classList.add('gel');
+  $('#meyveYer').innerHTML = m ? meyveSVG(m, 190) : '';
+  $('#meyveEtiket').textContent = etiket || 'MEYVE BANDI';
+  if (m) {
+    $('#gUzun').textContent = m.s.toFixed(2); $('#gUzunI').style.left = (m.s * 100) + '%';
+    $('#gRenk').textContent = m.c.toFixed(2) + ' · ' + renkAdi(m.c); $('#gRenkI').style.left = (m.c * 100) + '%';
+  } else { $('#gUzun').textContent = '–'; $('#gRenk').textContent = '–'; }
+}
+
+// ---------- adımlar ----------
+let adim = 0;
+const btn = (metin, cls, fn, dis) => { const b = document.createElement('button'); b.className = 'btn ' + (cls || ''); b.innerHTML = metin; b.onclick = fn; if (dis) b.disabled = true; return b; };
+function adimBar() {
+  $('#adimlar').innerHTML = '';
+  METIN.adimlar.forEach((a, i) => { const b = document.createElement('button'); b.className = 'adim'; b.innerHTML = `<span class="no">${i + 1}</span>${a}`; if (i === adim) b.setAttribute('aria-current', 'step'); b.onclick = () => adimaGit(i); $('#adimlar').appendChild(b); });
+}
+function adimaGit(i) { adim = i; vurgulu = null; adimBar(); [tanis, ogret, sina, deney, ozet][i](); ciz(); }
+const kontrol = $('#kontrol');
+
+function tanis() {
+  bandaKoy(null); konus(METIN.tanis, 'normal');
+  kontrol.innerHTML = '';
+  const e = document.createElement('div'); e.className = 'eylem';
+  e.append(btn('Bir meyve getir', 'ana', () => {
+    bandaKoy(meyveUret(rastgeleTur()));
+    if (!hafiza.length) { konus(METIN.tanisBilmiyor, 'sasir'); e.innerHTML = ''; e.append(btn('Çıtır\'a öğret →', 'ana', () => adimaGit(1))); }
+    else { const t = tahmin(simdiki); vurgulu = { p: simdiki, ks: t.ks }; ciz(); konus(`Bence bu bir <b>${TUR[t.tur].ad.toLocaleLowerCase('tr-TR')}</b>. Hafızamda ${hafiza.length} örnek var.`, 'mutlu'); }
+  }));
+  kontrol.append(e);
+}
+
+function ogret() {
+  konus(METIN.ogret, 'normal');
+  kontrol.innerHTML = '';
+  const sep = document.createElement('div'); sep.className = 'sepetler';
+  TURLER.forEach(t => {
+    const b = document.createElement('button'); b.className = 'sepet'; b.style.setProperty('--k', `var(--${t})`);
+    b.innerHTML = meyveSVG(meyveUret(t, { kirmizi: true }), 48) + `<span>${TUR[t].sepet}<br><span class="say" data-say="${t}"></span></span>`;
+    b.setAttribute('aria-label', `${TUR[t].sepet} sepetine koy`);
+    b.onclick = () => {
+      if (!simdiki) return;
+      hafizaEkle(simdiki, t);
+      const n = hafiza.length;
+      if (t !== simdiki.tur) konus(`Tamam, bunu <b>${TUR[t].ad.toLocaleLowerCase('tr-TR')}</b> olarak öğrendim. Sen ne dersen ona inanırım!`, 'dusun');
+      else konus(METIN.ogretAdim[n] || METIN.ogretSonra, METIN.ogretAdim[n] ? 'mutlu' : 'normal');
+      sayGuncelle(); sonrakiMeyve();
+    };
+    sep.append(b);
+  });
+  const alt = document.createElement('div'); alt.className = 'eylem';
+  const ileri = btn('Beni sına →', 'ana', () => adimaGit(2), hafiza.length < 6);
+  ileri.id = 'sinaIleri';
+  alt.append(ileri, btn('Hafızayı sil', 'hafif', () => { hafiza = []; lejant(); ciz(); sayGuncelle(); konus('Hafızam silindi. Her şeyi unuttum!', 'sasir'); }));
+  const hizli = document.createElement('button'); hizli.className = 'link'; hizli.textContent = 'Öğretmen: 12 örneği otomatik ekle';
+  hizli.onclick = () => { for (let i = 0; i < 12; i++) { const m = meyveUret(TURLER[i % 3]); hafizaEkle(m, m.tur); } sayGuncelle(); konus(METIN.ogretAdim[12], 'mutlu'); };
+  kontrol.append(sep, alt, hizli);
+  sayGuncelle(); sonrakiMeyve();
+}
+function sayGuncelle() {
+  document.querySelectorAll('[data-say]').forEach(e => { e.textContent = hafiza.filter(h => h.etiket === e.dataset.say).length + ' örnek'; });
+  const ib = $('#sinaIleri'); if (ib) ib.disabled = hafiza.length < 6;
+}
+function sonrakiMeyve() { bandaKoy(meyveUret(rastgeleTur()), `ÖRNEK ${hafiza.length + 1}`); }
+
+let karne = { d: 0, y: 0 };
+function sina() {
+  if (!hafiza.length) { konus('Hafızam boş! Önce bana birkaç örnek öğretmelisin.', 'sasir'); kontrol.innerHTML = ''; kontrol.append(btn('← Öğret', 'ana', () => adimaGit(1))); bandaKoy(null); return; }
+  konus(METIN.sina, 'normal'); bandaKoy(null, 'SINAV');
+  kontrol.innerHTML = `<div class="karne"><div><b id="kD">${karne.d}</b><span>doğru tahmin</span></div><div><b id="kY">${karne.y}</b><span>yanlış tahmin</span></div><div><b id="kH">${hafiza.length}</b><span>örnek hafızada</span></div></div><div id="sonucYer"></div>`;
+  const e = document.createElement('div'); e.className = 'eylem';
+  e.append(btn('Yeni meyve getir', 'ana', yeniSinav), btn('Karneyi sıfırla', 'hafif', () => { karne = { d: 0, y: 0 }; $('#kD').textContent = 0; $('#kY').textContent = 0; }));
+  kontrol.append(e);
+}
+function yeniSinav() {
+  const m = meyveUret(rastgeleTur());
+  bandaKoy(m, 'SINAV'); vurgulu = null; ciz();
+  konus('Düşünüyorum...', 'dusun'); $('#sonucYer').innerHTML = '';
+  setTimeout(() => {
+    const t = tahmin(m); vurgulu = { p: m, ks: t.ks }; ciz();
+    const sayilar = TURLER.filter(x => t.ks.some(k => k.h.etiket === x)).map(x => `${t.ks.filter(k => k.h.etiket === x).length} ${TUR[x].ad.toLocaleLowerCase('tr-TR')}`).join(', ');
+    const ad = TUR[t.tur].ad.toLocaleLowerCase('tr-TR');
+    const dogru = t.tur === m.tur;
+    if (dogru) karne.d++; else karne.y++;
+    $('#kD').textContent = karne.d; $('#kY').textContent = karne.y;
+    konus([`Bence bu bir <b>${ad}</b>!`, METIN.sinaNeden(t.ks.length, sayilar, ad), dogru ? METIN.sinaDogru : METIN.sinaYanlis], dogru ? 'mutlu' : 'sasir');
+    const s = document.createElement('div'); s.className = 'sonuc ' + (dogru ? 'd' : 'y');
+    s.innerHTML = `${dogru ? '✓' : '✗'} Gerçekte: ${TUR[m.tur].ad}`;
+    $('#sonucYer').append(s);
+    if (!dogru) { const b = btn(`Bunu “${TUR[m.tur].ad}” olarak öğret`, '', () => { hafizaEkle(m, m.tur); $('#kH').textContent = hafiza.length; b.disabled = true; konus('Teşekkürler! Artık buna benzeyenleri daha iyi bilirim.', 'mutlu'); }); $('#sonucYer').append(document.createElement('div'), b); }
+  }, AZ ? 150 : 850);
+}
+
+// ---------- deneyler ----------
+const DENEYLER = [
+  {
+    ad: 'Az örnek mi, çok örnek mi?',
+    aciklama: 'Çıtır\'ı önce her meyveden 1 örnekle, sonra 10 örnekle eğitip 60 yeni meyveyle sınayalım.',
+    calistir(alan) {
+      const test = Array.from({ length: 60 }, () => meyveUret(rastgeleTur()));
+      const olc = () => test.filter(m => tahmin(m).tur === m.tur).length / test.length;
+      hafiza = []; TURLER.forEach(t => { const m = meyveUret(t, t === 'elma' ? { kirmizi: true } : {}); hafiza.push({ s: m.s, c: m.c, etiket: t, gorunum: t }); });
+      const a1 = olc();
+      hafiza = []; TURLER.forEach(t => { for (let i = 0; i < 10; i++) { const m = meyveUret(t); hafiza.push({ s: m.s, c: m.c, etiket: t, gorunum: t }); } });
+      const a2 = olc();
+      alan.innerHTML = `<div class="cubukGrafik"><div class="sat"><span>3 örnek</span><div class="ic"><i></i></div><span>%${Math.round(a1 * 100)}</span></div><div class="sat"><span>30 örnek</span><div class="ic"><i></i></div><span>%${Math.round(a2 * 100)}</span></div></div><p class="kucuk">60 yeni meyveden doğru bildiklerinin yüzdesi. Haritada 30 örnekli hafızayı görüyorsun.</p>`;
+      requestAnimationFrame(() => { const i = alan.querySelectorAll('.ic i'); i[0].style.width = (a1 * 100) + '%'; i[1].style.width = (a2 * 100) + '%'; });
+      konus([`Az örnekle 60 meyveden <b>${Math.round(a1 * 60)}</b> tanesini bildim, çok örnekle <b>${Math.round(a2 * 60)}</b> tanesini.`, 'Ne kadar çok örnek görürsem o kadar iyi tahmin ederim.'], 'mutlu');
+    }
+  },
+  {
+    ad: 'Hiç yeşil elma görmezse?',
+    aciklama: 'Çıtır\'a yalnızca kırmızı elmalar gösterelim. Sonra ona yeşil bir elma soralım.',
+    calistir(alan) {
+      hafiza = []; TURLER.forEach(t => { for (let i = 0; i < 8; i++) { const m = meyveUret(t, t === 'elma' ? { kirmizi: true } : {}); hafiza.push({ s: m.s, c: m.c, etiket: t, gorunum: t }); } });
+      const soru = () => { const m = meyveUret('elma', { yesil: true }); bandaKoy(m, 'YEŞİL ELMA'); const t = tahmin(m); vurgulu = { p: m, ks: t.ks }; ciz(); return t; };
+      const t = soru();
+      const ad = TUR[t.tur].ad.toLocaleLowerCase('tr-TR');
+      konus([`Bence bu bir <b>${ad}</b>...`, t.tur === 'elma' ? 'Bildim ama çok zorlandım.' : 'Hiç yeşil elma görmediğim için onu en çok benzeyen renkteki meyvelerle karıştırdım.'], t.tur === 'elma' ? 'mutlu' : 'sasir');
+      alan.innerHTML = `<p class="kucuk">Makine yalnızca gördüğü örneklerden öğrenir. Örnekler çeşitli değilse bazı şeyleri tanıyamaz. Gerçek hayatta da bir yapay zekâ yalnızca bazı insanların fotoğraflarıyla eğitilirse diğerlerini tanımakta zorlanabilir.</p>`;
+      alan.append(btn('Yeşil elma örnekleri ekle ve tekrar sor', 'ana', (ev) => {
+        for (let i = 0; i < 5; i++) { const m = meyveUret('elma', { yesil: true }); hafiza.push({ s: m.s, c: m.c, etiket: 'elma', gorunum: 'elma' }); }
+        lejant(); const t2 = soru(); ev.target.disabled = true;
+        konus([`Şimdi bence bu bir <b>${TUR[t2.tur].ad.toLocaleLowerCase('tr-TR')}</b>!`, 'Çeşitli örnekler görünce doğru tahmin ettim.'], 'mutlu');
+      }));
+    }
+  },
+  {
+    ad: 'Yanlış öğretirsek ne olur?',
+    aciklama: 'Muzların çoğunu yanlışlıkla “elma” sepetine koyalım. Sonra Çıtır\'a bir muz soralım.',
+    calistir(alan) {
+      hafiza = []; TURLER.forEach(t => { for (let i = 0; i < 8; i++) { const m = meyveUret(t); hafiza.push({ s: m.s, c: m.c, etiket: (t === 'muz' && i < 6) ? 'elma' : t, gorunum: t }); } });
+      const m = meyveUret('muz'); bandaKoy(m, 'MUZ'); const t = tahmin(m); vurgulu = { p: m, ks: t.ks }; ciz();
+      konus([`Bence bu bir <b>${TUR[t.tur].ad.toLocaleLowerCase('tr-TR')}</b>!`, 'Bana muzları elma diye öğrettin. Ben de öyle öğrendim.'], 'dusun');
+      alan.innerHTML = `<p class="kucuk">Haritada muz şeklindeki noktaların çoğu kırmızı çerçeveli: onlar “elma” diye etiketlendi. Etiketler yanlışsa makine de yanlış öğrenir. Etiketleri veren insanların dikkatli olması gerekir.</p>`;
+    }
+  }
+];
+let aktifDeney = -1;
+function deney() {
+  konus(METIN.deneyGiris, 'normal'); bandaKoy(null, 'DENEY');
+  kontrol.innerHTML = '';
+  const d = document.createElement('div'); d.className = 'deneyler';
+  DENEYLER.forEach((x, i) => {
+    const kart = document.createElement('div'); kart.className = 'deney'; if (i === aktifDeney) kart.setAttribute('aria-current', 'true');
+    kart.innerHTML = `<h3>${x.ad}</h3><p>${x.aciklama}</p>`;
+    const alan = document.createElement('div'); alan.style.display = 'grid'; alan.style.gap = '8px';
+    kart.append(btn('Deneyi başlat', 'ana', () => { aktifDeney = i; document.querySelectorAll('.deney').forEach(k => k.removeAttribute('aria-current')); kart.setAttribute('aria-current', 'true'); document.querySelectorAll('.deney .sonucAlan').forEach(a => a.innerHTML = ''); x.calistir(alan); lejant(); ciz(); }), alan);
+    alan.className = 'sonucAlan';
+    d.append(kart);
+  });
+  kontrol.append(d);
+}
+
+function ozet() {
+  bandaKoy(null, 'ÖZET');
+  konus(['Beni eğittiğin için teşekkürler! Birlikte öğrendiklerimize bir bakalım.'], 'mutlu');
+  kontrol.innerHTML = `<div class="ozet"><h2>${METIN.ozetBaslik}</h2><ol>${METIN.ozet.map(x => `<li>${x}</li>`).join('')}</ol><div class="gercek">${METIN.gercek.map(([a, b]) => `<div><b>${a}</b>${b}</div>`).join('')}</div></div>`;
+  const e = document.createElement('div'); e.className = 'eylem';
+  e.append(btn('Baştan başla', 'hafif', () => { hafiza = []; karne = { d: 0, y: 0 }; aktifDeney = -1; lejant(); adimaGit(0); }));
+  kontrol.append(e);
+}
+
+// haritaya dokununca hayalî meyve
+cv.addEventListener('click', (ev) => {
+  const r = cv.getBoundingClientRect(); const dpr = cv.width / r.width;
+  const s = kirp(((ev.clientX - r.left) * dpr - PAD) / (cv.width - PAD * 2)), c = kirp(((ev.clientY - r.top) * dpr - PAD) / (cv.height - PAD * 2));
+  const m = { tur: 'hayal', s, c };
+  bandaKoy(m, 'HAYALÎ MEYVE');
+  if (!hafiza.length) { konus('Hafızam boş, bilemem! Önce bana örnek öğret.', 'sasir'); vurgulu = null; ciz(); return; }
+  const t = tahmin(m); vurgulu = { p: m, ks: t.ks }; ciz();
+  const sayilar = TURLER.filter(x => t.ks.some(k => k.h.etiket === x)).map(x => `${t.ks.filter(k => k.h.etiket === x).length} ${TUR[x].ad.toLocaleLowerCase('tr-TR')}`).join(', ');
+  const ad = TUR[t.tur].ad.toLocaleLowerCase('tr-TR');
+  konus([METIN.hayal + ` Bence bu bir <b>${ad}</b>.`, METIN.sinaNeden(t.ks.length, sayilar, ad)], 'dusun');
+});
+$('#bolgeGoster').addEventListener('change', ciz);
+addEventListener('resize', haritaBoyut);
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', ciz);
+new MutationObserver(ciz).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+document.fonts?.ready.then(ciz);
+
+lejant(); adimaGit(0); haritaBoyut();
+})();
+</script>
+</body>
+</html>

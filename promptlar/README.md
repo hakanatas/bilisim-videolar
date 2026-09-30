@@ -6,6 +6,8 @@ Bilişim Teknolojileri ve Yazılım kazanımlarını, tarayıcıda gezilebilen 3
 |---|-------|-------|--------|--------|----------|
 | 1 | Dijital Vatandaşlık | Sahil kasabası (internet = kasaba) | Paket (posta güvercini) | [01-dijital-vatandaslik-paket-in-kasabasi.md](01-dijital-vatandaslik-paket-in-kasabasi.md) | [Paket'in Kasabası](../etkinlikler/paket-in-kasabasi/) |
 
+| – | Yapay zekâ / makine öğrenmesi | Meyve ayıran robot | Çıtır | – | [Çıtır'ın Meyve Okulu](../etkinlikler/citirin-meyve-okulu/) |
+
 ## Yeni bir ünite için promptu uyarlama
 
 Fen promptunda kavramlar sahnede zaten vardı (çiçek, nehir, kar). Bilişim kavramları ise soyut. O yüzden en önemli adım **metafor**:
