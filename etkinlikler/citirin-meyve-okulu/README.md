@@ -8,7 +8,7 @@ Tek dosya: `index.html`. İnternet bağlantısı gerekir; Three.js `cdn.jsdelivr
 
 1. **Tanış:** Çıtır hiçbir şey bilmiyor ve getirilen meyveyi tahmin edemiyor. Resmi görmediğini, yalnızca iki **özellik** ölçtüğünü anlatıyor: uzunluk ve renk.
 2. **Öğret:** Öğrenci banttaki meyveyi doğru sepete koyuyor (paneldeki düğmelerle ya da 3B sepete dokunarak). Her meyve bir **örnek**, sepet de onun **etiketi**. Meyve sepete uçuyor, bir ışık da panoya giderek orada nokta oluyor ve renkli bölgeler Çıtır'ın tahminlerini gösteriyor.
-3. **Sına:** Çıtır daha önce görmediği meyveleri tahmin ediyor. Nedenini de söylüyor: "Buna en çok benzeyen 3 örneğe baktım." Bu 3 örnek panoda çizgiyle gösteriliyor. Yanılırsa öğrenci doğrusunu öğretebiliyor.
+3. **Sına:** Çıtır daha önce görmediği meyveleri tahmin ediyor. Üç tahminden sonra "Deney yap →" düğmesi çıkıyor. Nedenini de söylüyor: "Buna en çok benzeyen 3 örneğe baktım." Bu 3 örnek panoda çizgiyle gösteriliyor. Yanılırsa öğrenci doğrusunu öğretebiliyor.
 4. **Deney yap:** Üç deney var:
    - Az örnek mi, çok örnek mi? Başarı yüzdesi karşılaştırılıyor.
    - Hiç yeşil elma görmezse? Veri çeşitliliği ve önyargı konusu.

@@ -185,6 +185,7 @@ window.METIN = {
   sinaNeden: (k, sayilar, tahmin) => `Panoda buna en çok benzeyen <b>${k}</b> örneğe baktım: ${sayilar}. Çoğu <b>${tahmin}</b> olduğu için “${tahmin}” dedim.`,
   sinaDogru: "Bildim!",
   sinaYanlis: "Yanıldım! Buna benzeyen yeterince örnek görmemişim. Doğrusunu öğretirsen bir dahakine bilirim.",
+  sinaIleri: "Beni birkaç kez sınadın. İstediğin kadar devam edebilirsin ya da <b>Deney yap →</b> düğmesiyle deneylere geçebilirsin.",
   hayal: "Bu, panoda hayal ettiğin bir meyve.",
   deneyGiris: "Bilim insanları gibi deney yapalım. Bir deney seç. Dikkat: deney benim beynimi değiştirir.",
   ozetBaslik: "Makine öğrenmesi nasıl çalışır?",
@@ -767,8 +768,11 @@ function sina() {
   kontrol.innerHTML = `<div class="karne"><div><b id="kD">${karne.d}</b><span>doğru</span></div><div><b id="kY">${karne.y}</b><span>yanlış</span></div><div><b id="kH">${hafiza.length}</b><span>örnek</span></div></div><div id="sonucYer" style="display:grid;gap:8px"></div>`;
   const e = document.createElement('div'); e.className = 'eylem';
   e.append(btn('Yeni meyve getir', 'ana', yeniSinav), btn('Karneyi sıfırla', 'hafif', () => { karne = { d: 0, y: 0 }; $('#kD').textContent = 0; $('#kY').textContent = 0; }));
+  const ileri = btn('Deney yap →', 'ana', () => adimaGit(3)); ileri.id = 'deneyIleri'; ileri.hidden = karne.d + karne.y < SINAV_ESIK;
+  e.append(ileri);
   kontrol.append(e);
 }
+const SINAV_ESIK = 3;
 function yeniSinav() {
   if (DURUM.mesgul) return; DURUM.mesgul = true;
   const m = meyveUret(rastgeleTur()); komsuCiz(null); $('#sonucYer').innerHTML = '';
@@ -777,10 +781,12 @@ function yeniSinav() {
     DURUM.dusunuyor = false; DURUM.mesgul = false;
     const t = tahmin(m); komsuCiz(m, t.ks); const ad = tr(AD[t.tur]); const dogru = t.tur === m.tur;
     if (dogru) karne.d++; else karne.y++; $('#kD').textContent = karne.d; $('#kY').textContent = karne.y;
+    const di = $('#deneyIleri'); const ilkKez = di && di.hidden && karne.d + karne.y >= SINAV_ESIK; if (di) di.hidden = karne.d + karne.y < SINAV_ESIK;
     yuzCiz(null, t.tur);
     konus([`Bence bu bir <b>${ad}</b>!`, M.sinaNeden(t.ks.length, sayilarMetni(t), ad), dogru ? M.sinaDogru : M.sinaYanlis], dogru ? 'mutlu' : 'sasir');
     yuzCiz(null, t.tur); setTimeout(() => yuzCiz(dogru ? 'mutlu' : 'sasir'), 2500);
     const s = document.createElement('div'); s.className = 'sonuc ' + (dogru ? 'd' : 'y'); s.textContent = `${dogru ? '✓' : '✗'} Gerçekte: ${AD[m.tur]}`; $('#sonucYer').append(s);
+    if (ilkKez) { const n = document.createElement('p'); n.className = 'kucuk'; n.innerHTML = M.sinaIleri; $('#sonucYer').append(n); }
     if (!dogru) { const b = btn(`Bunu “${AD[m.tur]}” olarak öğret`, '', () => { b.disabled = true; hafiza.push({ s: m.s, c: m.c, etiket: m.tur, gorunum: m.tur }); if (bantMeyve) { scene.remove(bantMeyve); bantMeyve = null; } sepeteKoy(m.tur, m, true); panoGuncelle(); $('#kH').textContent = hafiza.length; konus('Teşekkürler! Artık buna benzeyenleri daha iyi bilirim.', 'mutlu'); }); $('#sonucYer').append(b); }
   }, AZ ? 100 : 500)); });
 }
@@ -830,9 +836,12 @@ function deney() {
     const kart = document.createElement('div'); kart.className = 'deney'; if (i === aktifDeney) kart.setAttribute('aria-current', 'true');
     kart.innerHTML = `<h3>${x.ad}</h3><p>${x.aciklama}</p>`;
     const alan = document.createElement('div'); alan.className = 'sonucAlan'; alan.style.cssText = 'display:grid;gap:8px';
-    kart.append(btn('Deneyi başlat', 'ana', () => { aktifDeney = i; document.querySelectorAll('.deney').forEach(k => k.removeAttribute('aria-current')); kart.setAttribute('aria-current', 'true'); document.querySelectorAll('.sonucAlan').forEach(a => a.innerHTML = ''); x.calistir(alan); }), alan);
+    kart.append(btn('Deneyi başlat', 'ana', () => { aktifDeney = i; document.querySelectorAll('.deney').forEach(k => k.removeAttribute('aria-current')); kart.setAttribute('aria-current', 'true'); document.querySelectorAll('.sonucAlan').forEach(a => a.innerHTML = ''); x.calistir(alan); const oi = $('#ozetIleri'); if (oi) oi.hidden = false; }), alan);
     kontrol.append(kart);
   });
+  const e = document.createElement('div'); e.className = 'eylem';
+  const ileri = btn('Ne öğrendik? →', 'ana', () => adimaGit(4)); ileri.id = 'ozetIleri'; ileri.hidden = aktifDeney < 0;
+  e.append(ileri); kontrol.append(e);
 }
 function ozet() {
   kameraGit(V(-1.5, 5.2, 16.5), V(0.5, 2.3, -0.6));
