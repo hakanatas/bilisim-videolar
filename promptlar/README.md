@@ -2,9 +2,9 @@
 
 Bilişim Teknolojileri ve Yazılım kazanımlarını, tarayıcıda gezilebilen 3B ve oyun hissi veren sahnelere dönüştürmek için promptlar.
 
-| # | Ünite | Sahne | Rehber | Dosya |
-|---|-------|-------|--------|-------|
-| 1 | Dijital Vatandaşlık | Sahil kasabası (internet = kasaba) | Paket (posta güvercini) | [01-dijital-vatandaslik-paket-in-kasabasi.md](01-dijital-vatandaslik-paket-in-kasabasi.md) |
+| # | Ünite | Sahne | Rehber | Prompt | Etkinlik |
+|---|-------|-------|--------|--------|----------|
+| 1 | Dijital Vatandaşlık | Sahil kasabası (internet = kasaba) | Paket (posta güvercini) | [01-dijital-vatandaslik-paket-in-kasabasi.md](01-dijital-vatandaslik-paket-in-kasabasi.md) | [Paket'in Kasabası](../etkinlikler/paket-in-kasabasi/) |
 
 ## Yeni bir ünite için promptu uyarlama
 
