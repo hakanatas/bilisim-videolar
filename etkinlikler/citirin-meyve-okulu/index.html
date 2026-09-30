@@ -8,240 +8,185 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
-/* Yerleşim: solda robot Çıtır ve meyve bandı (sahne), sağda "Çıtır'ın Beyni" haritası; üstte adım sekmeleri. Akıllı tahtada uzaktan okunacak büyüklükte. */
+/* Yerleşim: 3B atölye tam ekran; solda Çıtır'ın defteri (yan panel), üstte adımlar. Telefonda defter alttan açılır. */
 :root{
-  --zemin:#eaf2ee;          /* laboratuvar nane yeşili */
-  --yuzey:#ffffff;
-  --yuzey-2:#f4f8f6;
+  --gece:#10262b;           /* Çıtır'ın ekranı ve beyin panosu */
+  --defter:#fffdf6;         /* yan panel zemini */
+  --defter-2:#f1f6f3;
   --murekkep:#1c2b33;
   --soluk:#55656d;
-  --cizgi:#cfdcd6;
-  --robot:#1f8a8a;          /* Çıtır'ın gövdesi */
+  --cizgi:#d6e2dc;
+  --robot:#1f8a8a;
   --robot-koyu:#146266;
-  --vurgu:#ff7a3d;          /* düğme ve seçim vurgusu */
+  --vurgu:#ff7a3d;
   --elma:#d8433a;
   --limon:#d9a600;
   --muz:#6d56c9;
   --dogru:#2e8b57;
   --yanlis:#c2412d;
-  --golge:0 6px 22px rgba(28,43,51,.10);
+  --golge:0 10px 30px rgba(12,28,34,.22);
   --f-baslik:"Fredoka","Trebuchet MS","Segoe UI",sans-serif;
   --f-metin:"Nunito","Verdana","Segoe UI",sans-serif;
   --f-sayi:"JetBrains Mono","Consolas","Courier New",monospace;
-  --t-s:clamp(14px,1.05vw,16px);
-  --t-m:clamp(16px,1.3vw,20px);
-  --t-l:clamp(20px,1.8vw,28px);
-  --t-xl:clamp(26px,2.6vw,40px);
+  --t-s:clamp(14px,1.02vw,16px);
+  --t-m:clamp(16px,1.25vw,19px);
+  --t-l:clamp(20px,1.7vw,26px);
+  --t-xl:clamp(24px,2.4vw,38px);
+  --yan:min(34vw,520px);
+  color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --zemin:#101a1e; --yuzey:#18252a; --yuzey-2:#1e2d33; --murekkep:#e6f0ec; --soluk:#9fb2b8; --cizgi:#2d3f45;
-  --robot:#35b0ad; --robot-koyu:#1f7f7e; --vurgu:#ff8c55; --elma:#f0675d; --limon:#f2c230; --muz:#9c86ff; --dogru:#4cc184; --yanlis:#f07a63;
-  --golge:0 6px 22px rgba(0,0,0,.35); color-scheme:dark }}
-:root[data-theme="dark"]{
-  --zemin:#101a1e; --yuzey:#18252a; --yuzey-2:#1e2d33; --murekkep:#e6f0ec; --soluk:#9fb2b8; --cizgi:#2d3f45;
-  --robot:#35b0ad; --robot-koyu:#1f7f7e; --vurgu:#ff8c55; --elma:#f0675d; --limon:#f2c230; --muz:#9c86ff; --dogru:#4cc184; --yanlis:#f07a63;
-  --golge:0 6px 22px rgba(0,0,0,.35); color-scheme:dark }
 *{box-sizing:border-box}
-html,body{min-height:100%}
-body{margin:0;background:var(--zemin);color:var(--murekkep);font-family:var(--f-metin);font-size:var(--t-m);line-height:1.5;padding-inline:16px;padding-block:12px 24px}
+html,body{height:100%;margin:0;overflow:hidden;background:#cfe6ee;color:var(--murekkep);font-family:var(--f-metin);-webkit-tap-highlight-color:transparent}
+#sahne{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,canvas:focus-visible{outline:3px solid var(--vurgu);outline-offset:2px}
 button:disabled{opacity:.45;cursor:not-allowed}
-.kap{max-width:1500px;margin:0 auto;display:grid;gap:14px}
+[hidden]{display:none!important}
 
-/* üst bar */
-header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px;justify-content:space-between}
-.marka{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-.marka h1{font-family:var(--f-baslik);font-weight:700;font-size:var(--t-xl);margin:0;line-height:1;text-wrap:balance}
-.marka span{color:var(--soluk);font-size:var(--t-s);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+#yukleme{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 60%,#2a6b6b 0%,#10262b 70%);color:#fff;text-align:center;padding:24px}
+#yukleme h1{font-family:var(--f-baslik);font-weight:700;font-size:clamp(34px,5vw,58px);margin:0 0 14px;line-height:1}
+#yukleme p{margin:10px 0 0;opacity:.85;font-size:var(--t-m)}
+.cubuk{width:min(320px,70vw);height:8px;border-radius:8px;background:rgba(255,255,255,.15);overflow:hidden;margin:0 auto}
+.cubuk i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--vurgu),#ffc15a);transition:width .3s}
+#hata{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#10262b;padding:24px}
+#hata .kart{max-width:620px;background:var(--defter);border-radius:14px;padding:26px;box-shadow:var(--golge);font-size:var(--t-m);line-height:1.55}
+#hata h2{font-family:var(--f-baslik);margin:0 0 8px;color:var(--yanlis)}
+
+/* yan panel: Çıtır'ın defteri */
+#yan{position:fixed;left:0;top:0;bottom:0;width:var(--yan);z-index:10;display:flex;flex-direction:column;background:var(--defter);box-shadow:var(--golge);padding:calc(14px + env(safe-area-inset-top,0px)) 18px calc(14px + env(safe-area-inset-bottom,0px)) calc(18px + env(safe-area-inset-left,0px));gap:12px;overflow-y:auto}
+.marka h1{font-family:var(--f-baslik);font-weight:700;font-size:var(--t-xl);margin:0;line-height:1.05;text-wrap:balance}
+.marka span{display:block;color:var(--soluk);font-size:var(--t-s);font-weight:800;letter-spacing:.05em;margin-top:2px}
 nav.adimlar{display:flex;gap:6px;flex-wrap:wrap}
-.adim{display:flex;align-items:center;gap:8px;min-height:48px;padding:6px 14px 6px 8px;border:2px solid var(--cizgi);border-radius:999px;background:var(--yuzey);font-weight:800;font-size:var(--t-s)}
-.adim .no{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--yuzey-2);font-family:var(--f-sayi);font-size:14px}
+.adim{display:flex;align-items:center;gap:6px;min-height:44px;padding:4px 12px 4px 5px;border:2px solid var(--cizgi);border-radius:999px;background:#fff;font-weight:800;font-size:var(--t-s)}
+.adim .no{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--defter-2);font-family:var(--f-sayi);font-size:14px}
 .adim[aria-current="step"]{border-color:var(--robot);background:var(--robot);color:#fff}
-.adim[aria-current="step"] .no{background:rgba(255,255,255,.22);color:#fff}
-
-/* ana ızgara */
-main{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:14px;align-items:start}
-@media (max-width:980px){main{grid-template-columns:1fr}}
-.panel{background:var(--yuzey);border-radius:18px;box-shadow:var(--golge);padding:16px;min-width:0}
-.panel h2{font-family:var(--f-baslik);font-weight:600;font-size:var(--t-l);margin:0 0 8px;line-height:1.15}
-
-/* sahne */
-.sahne{display:grid;gap:14px}
-.robotSatir{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start}
-#robot{width:clamp(96px,10vw,150px);height:auto;display:block}
-.balon{position:relative;background:var(--yuzey-2);border:2px solid var(--cizgi);border-radius:16px;padding:12px 16px;min-height:96px;font-size:var(--t-m)}
-.balon::before{content:"";position:absolute;left:-11px;top:28px;width:18px;height:18px;background:var(--yuzey-2);border-left:2px solid var(--cizgi);border-bottom:2px solid var(--cizgi);transform:rotate(45deg)}
+.adim[aria-current="step"] .no{background:rgba(255,255,255,.22)}
+.balon{position:relative;background:var(--defter-2);border:2px solid var(--cizgi);border-radius:16px;padding:12px 14px;font-size:var(--t-m);line-height:1.5}
+.balon .kim{display:flex;align-items:center;gap:8px;font-family:var(--f-baslik);font-weight:600;color:var(--robot-koyu);margin-bottom:4px}
+.balon .kim i{width:12px;height:12px;border-radius:50%;background:var(--vurgu);box-shadow:0 0 0 3px rgba(255,122,61,.25)}
 .balon p{margin:0}
 .balon p+p{margin-top:6px}
 .balon b{color:var(--robot-koyu)}
-:root[data-theme="dark"] .balon b{color:var(--robot)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .balon b{color:var(--robot)}}
-
-.bant{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:stretch}
-@media (max-width:560px){.bant{grid-template-columns:1fr}}
-.meyveKutu{position:relative;background:repeating-linear-gradient(90deg,var(--yuzey-2) 0 22px,color-mix(in srgb,var(--yuzey-2) 70%,var(--cizgi)) 22px 44px);border-radius:14px;display:grid;place-items:center;min-height:210px;overflow:hidden}
-.meyveKutu svg{width:min(190px,80%);height:auto;transition:transform .45s cubic-bezier(.2,.9,.3,1.3)}
-.meyveKutu.gel svg{animation:gel .5s cubic-bezier(.2,.9,.3,1.2)}
-@keyframes gel{from{transform:translateX(-120%) rotate(-25deg)}to{transform:none}}
-.meyveKutu .etiket{position:absolute;left:10px;top:10px;font-family:var(--f-sayi);font-size:13px;font-weight:700;color:var(--soluk);background:var(--yuzey);padding:2px 8px;border-radius:6px}
-.goz{background:var(--yuzey-2);border-radius:14px;padding:12px 14px;display:grid;gap:10px;align-content:start}
-.goz h3{margin:0;font-family:var(--f-baslik);font-weight:600;font-size:var(--t-m);display:flex;gap:8px;align-items:center}
-.goz .not{font-size:var(--t-s);color:var(--soluk);margin:0}
-.olcu{display:grid;gap:4px}
+.goz{display:grid;gap:4px;background:#fff;border:2px solid var(--cizgi);border-radius:14px;padding:10px 12px 18px}
+.goz h3{margin:0 0 2px;font-family:var(--f-baslik);font-weight:600;font-size:var(--t-m);display:flex;gap:8px;align-items:center}
 .olcu .ust{display:flex;justify-content:space-between;font-weight:800;font-size:var(--t-s)}
 .olcu .ust span:last-child{font-family:var(--f-sayi);font-variant-numeric:tabular-nums}
-.cubuk{position:relative;height:18px;border-radius:9px;background:var(--cizgi)}
-.cubuk.renk{background:linear-gradient(90deg,hsl(2,78%,52%),hsl(48,92%,55%),hsl(100,55%,45%))}
-.cubuk i{position:absolute;top:-5px;width:6px;height:28px;border-radius:3px;background:var(--murekkep);transform:translateX(-50%);transition:left .4s}
-.cubuk .uclar{position:absolute;inset:auto 0 -20px 0;display:flex;justify-content:space-between;font-size:12px;color:var(--soluk)}
 .olcu{padding-bottom:14px}
-
-.eylem{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.btn{min-height:52px;padding:10px 18px;border-radius:14px;border:2px solid var(--murekkep);background:var(--yuzey);font-weight:800;font-size:var(--t-m)}
+.cb{position:relative;height:14px;border-radius:7px;background:var(--cizgi)}
+.cb.renk{background:linear-gradient(90deg,hsl(2,78%,52%),hsl(48,92%,55%),hsl(100,55%,45%))}
+.cb i{position:absolute;top:-5px;width:6px;height:24px;border-radius:3px;background:var(--murekkep);transform:translateX(-50%);transition:left .4s}
+.cb .uclar{position:absolute;inset:auto 0 -19px 0;display:flex;justify-content:space-between;font-size:12px;color:var(--soluk)}
+#kontrol{display:grid;gap:10px}
+.eylem{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{min-height:50px;padding:8px 16px;border-radius:14px;border:2px solid var(--murekkep);background:#fff;font-weight:800;font-size:var(--t-m)}
 .btn.ana{background:var(--vurgu);border-color:var(--vurgu);color:#fff}
 .btn.hafif{border-color:var(--cizgi)}
 .btn:not(:disabled):hover{transform:translateY(-1px)}
-.sepetler{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.sepet{min-height:84px;border-radius:16px;border:3px solid var(--k);background:var(--yuzey);display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--f-baslik);font-weight:600;font-size:var(--t-l);padding:8px}
-.sepet svg{width:48px;height:48px;flex:none}
-.sepet:not(:disabled):hover{background:color-mix(in srgb,var(--k) 12%,var(--yuzey))}
-.sepet .say{font-family:var(--f-sayi);font-size:14px;color:var(--soluk)}
-@media (max-width:560px){.sepet{flex-direction:column;gap:2px;font-size:var(--t-m)}.sepet svg{width:38px;height:38px}}
-
-.karne{display:flex;gap:10px;flex-wrap:wrap}
-.karne div{flex:1 1 120px;background:var(--yuzey-2);border-radius:12px;padding:8px 12px}
+.sepetler{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.sepet{min-height:74px;border-radius:14px;border:3px solid var(--k);background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;font-family:var(--f-baslik);font-weight:600;font-size:var(--t-l);padding:6px;line-height:1.1}
+.sepet .say{font-family:var(--f-sayi);font-size:13px;color:var(--soluk);font-weight:500}
+.sepet:not(:disabled):hover{background:var(--defter-2)}
+.karne{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.karne div{background:var(--defter-2);border-radius:12px;padding:6px 10px}
 .karne b{display:block;font-family:var(--f-sayi);font-size:var(--t-l);font-variant-numeric:tabular-nums}
-.karne span{font-size:var(--t-s);color:var(--soluk);font-weight:700}
-.sonuc{border-radius:14px;padding:10px 14px;font-weight:800;display:flex;gap:10px;align-items:center}
-.sonuc.d{background:color-mix(in srgb,var(--dogru) 16%,var(--yuzey));color:var(--dogru)}
-.sonuc.y{background:color-mix(in srgb,var(--yanlis) 16%,var(--yuzey));color:var(--yanlis)}
-
-/* beyin */
-.beyin{display:grid;gap:10px}
-.beyinBas{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
-.beyinBas p{margin:0;color:var(--soluk);font-size:var(--t-s);max-width:60ch}
-.haritaKap{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:6px}
-.eksenY{grid-row:1;display:flex;flex-direction:column;align-items:center;gap:6px}
-.eksenY .serit{flex:1;width:14px;border-radius:7px;background:linear-gradient(180deg,hsl(2,78%,52%),hsl(48,92%,55%),hsl(100,55%,45%));min-height:120px}
-.eksenY b{writing-mode:vertical-rl;transform:rotate(180deg);font-size:var(--t-s)}
-.eksenX{grid-column:2;display:flex;justify-content:space-between;align-items:center;font-size:var(--t-s);font-weight:700;color:var(--soluk)}
-.eksenX b{color:var(--murekkep)}
-#harita{width:100%;aspect-ratio:1.25/1;max-width:100%;display:block;border-radius:12px;background:var(--yuzey-2);touch-action:manipulation;cursor:crosshair}
-.lejant{display:flex;gap:16px;flex-wrap:wrap;font-weight:800;font-size:var(--t-s)}
-.lejant span{display:flex;gap:6px;align-items:center}
-.lejant i{width:16px;height:16px;border-radius:4px;background:var(--k)}
-.anahtar{display:flex;align-items:center;gap:8px;font-weight:800;font-size:var(--t-s)}
-.anahtar input{width:22px;height:22px;accent-color:var(--robot)}
-
-/* deney kartları */
-.deneyler{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
-.deney{border:2px solid var(--cizgi);border-radius:14px;padding:12px;display:grid;gap:8px;align-content:start;background:var(--yuzey)}
+.karne span{font-size:13px;color:var(--soluk);font-weight:800}
+.sonuc{border-radius:12px;padding:8px 12px;font-weight:800}
+.sonuc.d{background:#e2f3e9;color:var(--dogru)}
+.sonuc.y{background:#fbe4df;color:var(--yanlis)}
+.deney{border:2px solid var(--cizgi);border-radius:14px;padding:10px 12px;display:grid;gap:6px;background:#fff}
 .deney[aria-current="true"]{border-color:var(--vurgu)}
 .deney h3{margin:0;font-family:var(--f-baslik);font-weight:600;font-size:var(--t-m)}
 .deney p{margin:0;font-size:var(--t-s);color:var(--soluk)}
-.cubukGrafik{display:grid;gap:8px}
-.cubukGrafik .sat{display:grid;grid-template-columns:minmax(90px,auto) minmax(0,1fr) auto;gap:10px;align-items:center;font-weight:800;font-size:var(--t-s)}
-.cubukGrafik .ic{height:22px;border-radius:6px;background:var(--cizgi);overflow:hidden}
-.cubukGrafik .ic i{display:block;height:100%;background:var(--robot);width:0;transition:width .8s}
-.cubukGrafik .sat span:last-child{font-family:var(--f-sayi);font-variant-numeric:tabular-nums}
-
-.ozet ol{margin:0;padding-left:1.3em;display:grid;gap:8px;max-width:70ch}
+.cg{display:grid;gap:6px}
+.cg .sat{display:grid;grid-template-columns:minmax(80px,auto) minmax(0,1fr) auto;gap:8px;align-items:center;font-weight:800;font-size:var(--t-s)}
+.cg .ic{height:18px;border-radius:5px;background:var(--cizgi);overflow:hidden}
+.cg .ic i{display:block;height:100%;background:var(--robot);width:0;transition:width .8s}
+.cg span:last-child{font-family:var(--f-sayi)}
+.ozet ol{margin:0;padding-left:1.3em;display:grid;gap:6px;font-size:var(--t-m)}
 .ozet li::marker{font-family:var(--f-sayi);color:var(--robot);font-weight:700}
-.ozet .gercek{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
-.ozet .gercek div{background:var(--yuzey-2);border-radius:12px;padding:10px 12px;font-size:var(--t-s)}
-.ozet .gercek b{display:block;font-family:var(--f-baslik);font-weight:600;font-size:var(--t-m)}
-.kucuk{font-size:var(--t-s);color:var(--soluk)}
-.link{background:none;border:0;padding:0;color:var(--robot-koyu);text-decoration:underline;font-weight:800;font-size:var(--t-s)}
-:root[data-theme="dark"] .link{color:var(--robot)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .link{color:var(--robot)}}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.ozet h2{font-family:var(--f-baslik);font-weight:600;font-size:var(--t-l);margin:0 0 6px}
+.gercek{display:grid;gap:8px;margin-top:10px}
+.gercek div{background:var(--defter-2);border-radius:12px;padding:8px 12px;font-size:var(--t-s)}
+.gercek b{display:block;font-family:var(--f-baslik);font-weight:600;font-size:var(--t-m)}
+.kucuk{font-size:var(--t-s);color:var(--soluk);margin:0}
+.link{background:none;border:0;padding:0;color:var(--robot-koyu);text-decoration:underline;font-weight:800;font-size:var(--t-s);justify-self:start}
+
+/* sağ üst araçlar */
+#araclar{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));top:calc(14px + env(safe-area-inset-top,0px));z-index:10;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.arac{min-height:46px;padding:6px 14px;border:0;border-radius:12px;background:rgba(16,38,43,.78);color:#fff;font-weight:800;font-size:var(--t-s);display:flex;align-items:center;gap:6px;backdrop-filter:blur(6px)}
+.arac[aria-pressed="true"]{background:#fff;color:var(--murekkep)}
+#bildirim{position:fixed;left:calc(var(--yan) + (100% - var(--yan)) / 2);transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:12;background:rgba(16,38,43,.9);color:#fff;padding:10px 18px;border-radius:30px;font-weight:700;font-size:var(--t-s);pointer-events:none;opacity:0;transition:opacity .3s;max-width:calc(100% - var(--yan) - 32px);text-align:center}
+#bildirim.gor{opacity:1}
+
+@media (max-width:820px){
+  :root{--yan:0px}
+  #yan{top:auto;right:0;width:auto;height:52%;border-radius:18px 18px 0 0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px))}
+  .marka h1{font-size:22px}
+  #araclar{top:calc(10px + env(safe-area-inset-top,0px))}
+  #bildirim{left:50%;bottom:calc(54% + 10px);max-width:calc(100% - 32px)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<div class="kap">
-  <header>
-    <div class="marka"><h1>Çıtır'ın Meyve Okulu</h1><span>Makine öğrenmesi · 5. sınıf</span></div>
-    <nav class="adimlar" id="adimlar" aria-label="Adımlar"></nav>
-  </header>
+<canvas id="sahne" tabindex="0" aria-label="Çıtır'ın atölyesi. Beyin panosuna dokunarak hayalî bir meyve sorabilirsin."></canvas>
 
-  <main>
-    <section class="panel sahne" aria-label="Çıtır ve meyve bandı">
-      <div class="robotSatir">
-        <svg id="robot" viewBox="0 0 120 150" aria-hidden="true">
-          <line x1="60" y1="8" x2="60" y2="26" stroke="var(--robot-koyu)" stroke-width="4" stroke-linecap="round"/>
-          <circle id="rAnten" cx="60" cy="8" r="7" fill="var(--vurgu)"/>
-          <rect x="14" y="24" width="92" height="74" rx="22" fill="var(--robot)"/>
-          <rect x="24" y="34" width="72" height="50" rx="14" fill="#10262b"/>
-          <g id="rYuz" fill="#7df3e1" stroke="#7df3e1"></g>
-          <rect x="4" y="50" width="12" height="24" rx="6" fill="var(--robot-koyu)"/>
-          <rect x="104" y="50" width="12" height="24" rx="6" fill="var(--robot-koyu)"/>
-          <rect x="30" y="100" width="60" height="38" rx="12" fill="var(--robot-koyu)"/>
-          <rect x="44" y="110" width="32" height="8" rx="4" fill="var(--robot)"/>
-          <circle cx="48" cy="126" r="4" fill="var(--vurgu)"/><circle cx="60" cy="126" r="4" fill="#7df3e1"/><circle cx="72" cy="126" r="4" fill="var(--limon)"/>
-        </svg>
-        <div class="balon" id="balon" aria-live="polite"></div>
-      </div>
-
-      <div class="bant">
-        <div class="meyveKutu" id="meyveKutu"><span class="etiket" id="meyveEtiket">MEYVE BANDI</span><div id="meyveYer"></div></div>
-        <div class="goz" aria-label="Çıtır'ın gördükleri">
-          <h3><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Çıtır'ın gördüğü</h3>
-          <p class="not">Çıtır resmi görmez. Yalnızca iki ölçüm yapar.</p>
-          <div class="olcu"><div class="ust"><span>Uzunluk</span><span id="gUzun">–</span></div><div class="cubuk"><i id="gUzunI" style="left:50%"></i><div class="uclar"><span>yuvarlak</span><span>uzun</span></div></div></div>
-          <div class="olcu"><div class="ust"><span>Renk</span><span id="gRenk">–</span></div><div class="cubuk renk"><i id="gRenkI" style="left:50%"></i><div class="uclar"><span>kırmızı</span><span>sarı</span><span>yeşil</span></div></div></div>
-        </div>
-      </div>
-
-      <div id="kontrol" class="sahne"></div>
-    </section>
-
-    <section class="panel beyin" aria-label="Çıtır'ın Beyni">
-      <div class="beyinBas">
-        <div><h2>Çıtır'ın Beyni</h2><p id="beyinNot">Öğrettiğin her meyve bu haritada bir nokta olur. Renkli bölgeler Çıtır'ın tahminleridir.</p></div>
-        <label class="anahtar"><input type="checkbox" id="bolgeGoster" checked>Bölgeleri göster</label>
-      </div>
-      <div class="haritaKap">
-        <div class="eksenY"><b>Renk</b><div class="serit"></div></div>
-        <canvas id="harita" tabindex="0" aria-label="Çıtır'ın beyin haritası. Yatay eksen uzunluk, dikey eksen renk. Haritaya dokunarak hayalî bir meyve sorabilirsin."></canvas>
-        <div class="eksenX"><span>yuvarlak</span><b>Uzunluk</b><span>uzun</span></div>
-      </div>
-      <div class="lejant" id="lejant"></div>
-      <p class="kucuk" id="haritaIpucu">İpucu: Haritada bir yere dokun, Çıtır oradaki hayalî meyveyi tahmin etsin.</p>
-    </section>
-  </main>
+<div id="yukleme" role="status" aria-live="polite">
+  <div><h1>Çıtır'ın Meyve Okulu</h1><div class="cubuk"><i id="yukCubuk"></i></div><p id="yukMetin">Atölye hazırlanıyor…</p></div>
 </div>
+<div id="hata" hidden><div class="kart"><h2 id="hataBaslik"></h2><div id="hataMetin"></div></div></div>
+
+<aside id="yan" aria-label="Çıtır'ın defteri">
+  <div class="marka"><h1>Çıtır'ın Meyve Okulu</h1><span>MAKİNE ÖĞRENMESİ · 5. SINIF</span></div>
+  <nav class="adimlar" id="adimlar" aria-label="Adımlar"></nav>
+  <div class="balon" id="balon" aria-live="polite"></div>
+  <div class="goz" aria-label="Çıtır'ın gördüğü">
+    <h3><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Çıtır'ın gördüğü: yalnızca iki ölçüm</h3>
+    <div class="olcu"><div class="ust"><span>Uzunluk</span><span id="gUzun">–</span></div><div class="cb"><i id="gUzunI" style="left:50%"></i><div class="uclar"><span>yuvarlak</span><span>uzun</span></div></div></div>
+    <div class="olcu"><div class="ust"><span>Renk</span><span id="gRenk">–</span></div><div class="cb renk"><i id="gRenkI" style="left:50%"></i><div class="uclar"><span>kırmızı</span><span>sarı</span><span>yeşil</span></div></div></div>
+  </div>
+  <div id="kontrol"></div>
+</aside>
+
+<div id="araclar">
+  <button class="arac" id="dBolge" aria-pressed="true" title="Beyin panosundaki renkli bölgeleri göster ya da gizle">Bölgeler</button>
+  <button class="arac" id="dSifirla" title="Kamerayı başa al">Görünümü sıfırla</button>
+  <button class="arac" id="dKalite" title="Görüntü kalitesi">Kalite: Yüksek</button>
+</div>
+<div id="bildirim" role="status" aria-live="polite"></div>
 
 <script>
+document.documentElement.lang = 'tr';
 /* =====================================================================
    ÖĞRETMEN İÇİN: Çıtır'ın bütün konuşmaları bu METIN nesnesindedir.
    Tırnak içindeki yazıları değiştirebilirsin.
    ===================================================================== */
-const METIN = {
+window.METIN = {
   adimlar: ["Tanış", "Öğret", "Sına", "Deney yap", "Ne öğrendik?"],
   tanis: [
-    "Merhaba, ben <b>Çıtır</b>! Meyveleri sepetlere ayırmayı öğrenmek istiyorum: <b>elma</b>, <b>limon</b> ve <b>muz</b>.",
-    "Ama henüz hiçbir şey bilmiyorum. Bir meyve getir, tahmin etmeye çalışayım."
+    "Merhaba, ben <b>Çıtır</b>! Bahçeden gelen meyveleri sepetlere ayırmayı öğrenmek istiyorum: <b>elma</b>, <b>limon</b> ve <b>muz</b>.",
+    "Ama henüz hiçbir şey bilmiyorum. Banttan bir meyve getir, tahmin etmeye çalışayım."
   ],
   tanisBilmiyor: [
     "Hmm... Bu ne? Hiç örnek görmedim, <b>bilemiyorum</b>!",
-    "Ben resimleri senin gibi görmüyorum. Yalnızca iki şeyi ölçüyorum: meyve <b>ne kadar uzun</b> ve <b>ne renk</b>. Bu ölçümlere <b>özellik</b> denir.",
-    "Bana örnekler gösterip hangisinin ne olduğunu söylersen öğrenebilirim. Hadi başlayalım!"
+    "Ben meyveyi senin gibi görmüyorum. Yalnızca iki şeyi ölçüyorum: <b>ne kadar uzun</b> ve <b>ne renk</b>. Bu ölçümlere <b>özellik</b> denir.",
+    "Arkamdaki pano benim beynim. Şu an boş. Bana örnekler gösterirsen dolmaya başlar."
   ],
-  ogret: "Banttaki meyveye bak ve onu doğru sepete koy. Her meyve benim için bir <b>örnek</b>, sepetin adı da onun <b>etiketi</b>.",
+  ogret: "Banttaki meyveye bak ve onu doğru sepete koy. Her meyve benim için bir <b>örnek</b>, sepetin adı da onun <b>etiketi</b>. Her örnek beyin panoma bir nokta olarak eklenir.",
   ogretAdim: {
-    1: "İlk örneğim! Sağdaki haritaya bak: bu meyve orada bir nokta oldu.",
-    3: "Haritada renkli bölgeler oluşmaya başladı. Onlar benim tahminlerim.",
+    1: "İlk örneğim! Beyin panoma bak: bu meyve orada bir nokta oldu.",
+    3: "Panoda renkli bölgeler oluşmaya başladı. Onlar benim tahminlerim.",
     6: "Artık bir şeyler anlamaya başladım. Birkaç örnek daha gösterir misin?",
     12: "Bence hazırım! İstersen beni <b>sınayabilirsin</b>. Ya da daha çok örnek göster."
   },
-  ogretSonra: "Teşekkürler! Bunu hafızama ekledim.",
-  sina: "Şimdi sana hiç görmediğim meyveler getireceğim. Bakalım ne kadarını bileceğim?",
-  sinaNeden: (k, sayilar, tahmin) => `Haritada buna en çok benzeyen <b>${k}</b> örneğe baktım: ${sayilar}. Çoğu <b>${tahmin}</b> olduğu için “${tahmin}” dedim.`,
+  ogretSonra: "Teşekkürler! Bunu beynime ekledim.",
+  ogretYanlis: (ad) => `Tamam, bunu <b>${ad}</b> olarak öğrendim. Sen ne dersen ona inanırım!`,
+  sina: "Şimdi bahçeden hiç görmediğim meyveler gelecek. Bakalım kaçını bileceğim?",
+  sinaNeden: (k, sayilar, tahmin) => `Panoda buna en çok benzeyen <b>${k}</b> örneğe baktım: ${sayilar}. Çoğu <b>${tahmin}</b> olduğu için “${tahmin}” dedim.`,
   sinaDogru: "Bildim!",
   sinaYanlis: "Yanıldım! Buna benzeyen yeterince örnek görmemişim. Doğrusunu öğretirsen bir dahakine bilirim.",
-  hayal: "Bu, haritada hayal ettiğin bir meyve.",
-  deneyGiris: "Bilim insanları gibi deney yapalım. Bir deney seç. Dikkat: deney benim hafızamı değiştirir.",
+  hayal: "Bu, panoda hayal ettiğin bir meyve.",
+  deneyGiris: "Bilim insanları gibi deney yapalım. Bir deney seç. Dikkat: deney benim beynimi değiştirir.",
   ozetBaslik: "Makine öğrenmesi nasıl çalışır?",
   ozet: [
     "<b>Makine öğrenmesi</b>, bilgisayarın her şeyi tek tek anlatmadan <b>örneklerden öğrenmesidir</b>.",
@@ -258,328 +203,663 @@ const METIN = {
 };
 </script>
 
-<script>
-(() => {
-const $ = (s) => document.querySelector(s);
-const AZ = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const TUR = { elma: { ad: 'Elma', sepet: 'Elma' }, limon: { ad: 'Limon', sepet: 'Limon' }, muz: { ad: 'Muz', sepet: 'Muz' } };
-const TURLER = ['elma', 'limon', 'muz'];
-const renkVar = (t) => getComputedStyle(document.documentElement).getPropertyValue('--' + t).trim();
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
 
-// ---------- rastgele ve meyve üretimi ----------
+<script type="module">
+const $ = (s) => document.querySelector(s);
+const ilerle = (p, m) => { $('#yukCubuk').style.width = Math.round(p * 100) + '%'; if (m) $('#yukMetin').textContent = m; };
+const bekle = () => new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
+function hataGoster(b, h) { $('#hataBaslik').textContent = b; $('#hataMetin').innerHTML = h; $('#hata').hidden = false; $('#yukleme').hidden = true; }
+{
+  let ok = false; try { const c = document.createElement('canvas'); ok = !!(c.getContext('webgl2') || c.getContext('webgl')); } catch (e) {}
+  if (!ok) { hataGoster('Bu cihaz üç boyutlu sahneyi gösteremiyor', '<p>Tarayıcın WebGL desteklemiyor ya da kapalı. Chrome, Edge ya da Firefox\'un güncel sürümünü dene; tarayıcı ayarlarında "donanım hızlandırma"yı aç.</p>'); throw new Error('WebGL yok'); }
+}
+let THREE, OrbitControls, mergeGeometries;
+try {
+  ilerle(0.1, 'Üç boyut kütüphanesi indiriliyor…');
+  THREE = await import('three');
+  ({ OrbitControls } = await import('three/addons/controls/OrbitControls.js'));
+  ({ mergeGeometries } = await import('three/addons/utils/BufferGeometryUtils.js'));
+} catch (e) {
+  hataGoster('Üç boyut kütüphanesi yüklenemedi', '<p>Sahne, Three.js kütüphanesini <b>cdn.jsdelivr.net</b> adresinden indirir. Bu adrese ulaşılamadı.</p><p>Okul ağı bu adresi engelliyor olabilir. BT sorumlusundan <b>cdn.jsdelivr.net</b> ve <b>fonts.googleapis.com</b> adreslerine izin vermesini isteyebilir ya da başka bir ağdan deneyebilirsin.</p>');
+  throw e;
+}
+const M = window.METIN;
+const AZ = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const params = new URLSearchParams(location.search);
+let HAFIF = params.get('kalite') === 'hafif' || (params.get('kalite') !== 'yuksek' && ((matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 820) || (navigator.hardwareConcurrency || 8) <= 4));
+
+// ---------- yardımcılar ----------
 let tohum = (Date.now() ^ 0x5f3759df) >>> 0;
 const rnd = () => { tohum = (tohum + 0x6D2B79F5) | 0; let t = Math.imul(tohum ^ tohum >>> 15, 1 | tohum); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const sabit = (() => { let a = 12345; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; })();
 const R = (a, b) => a + (b - a) * rnd();
-const kirp = (v) => Math.max(0, Math.min(1, v));
-// s: uzunluk (0 yuvarlak, 1 uzun), c: renk (0 kırmızı, 0.5 sarı, 1 yeşil)
-function meyveUret(tur, secenek = {}) {
-  if (tur === 'elma') {
-    const yesil = secenek.yesil ?? (secenek.kirmizi ? false : rnd() < 0.4);
-    return { tur, s: R(0.04, 0.24), c: yesil ? R(0.8, 0.98) : R(0.02, 0.2) };
-  }
+const SR = (a, b) => a + (b - a) * sabit();
+const spick = (a) => a[Math.floor(sabit() * a.length)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const ease = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const C = (h) => new THREE.Color(h);
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+function hash2(x, z) { const h = Math.sin(x * 127.1 + z * 311.7) * 43758.5453; return h - Math.floor(h); }
+function vnoise(x, z) { const xi = Math.floor(x), zi = Math.floor(z), xf = x - xi, zf = z - zi; const u = xf * xf * (3 - 2 * xf), v = zf * zf * (3 - 2 * zf); const a = hash2(xi, zi), b = hash2(xi + 1, zi), c = hash2(xi, zi + 1), d = hash2(xi + 1, zi + 1); return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v; }
+const tr = (s) => s.toLocaleLowerCase('tr-TR');
+const TR_UP = (s) => s.toLocaleUpperCase('tr-TR');
+
+// ---------- meyve verisi ----------
+const TURLER = ['elma', 'limon', 'muz'];
+const AD = { elma: 'Elma', limon: 'Limon', muz: 'Muz' };
+const RENK = { elma: '#d8433a', limon: '#e0ae00', muz: '#6d56c9' };
+function meyveUret(tur, o = {}) {
+  if (tur === 'elma') { const yesil = o.yesil ?? (o.kirmizi ? false : rnd() < 0.4); return { tur, s: R(0.04, 0.24), c: yesil ? R(0.8, 0.98) : R(0.02, 0.2) }; }
   if (tur === 'limon') return { tur, s: R(0.32, 0.52), c: rnd() < 0.8 ? R(0.42, 0.58) : R(0.6, 0.7) };
   return { tur, s: R(0.7, 0.97), c: rnd() < 0.75 ? R(0.4, 0.6) : R(0.66, 0.82) };
 }
-// Torba: her üç meyvede bir elma, bir limon, bir muz gelir (sıra karışık); böylece örnekler dengeli olur.
 let torba = [];
 const rastgeleTur = () => { if (!torba.length) { torba = TURLER.slice(); for (let i = 2; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [torba[i], torba[j]] = [torba[j], torba[i]]; } } return torba.pop(); };
-function renkHsl(c) { const h = c < 0.5 ? 2 + (48 - 2) * c * 2 : 48 + (100 - 48) * (c - 0.5) * 2; const l = c < 0.5 ? 52 + 3 * c * 2 : 55 - 10 * (c - 0.5) * 2; const sat = c < 0.5 ? 78 + 14 * c * 2 : 92 - 37 * (c - 0.5) * 2; return `hsl(${h.toFixed(0)},${sat.toFixed(0)}%,${l.toFixed(0)}%)`; }
+function renkHsl(c) { const h = c < 0.5 ? 2 + 46 * c * 2 : 48 + 52 * (c - 0.5) * 2; const l = c < 0.5 ? 52 + 3 * c * 2 : 55 - 10 * (c - 0.5) * 2; const s = c < 0.5 ? 78 + 14 * c * 2 : 92 - 37 * (c - 0.5) * 2; return new THREE.Color().setHSL(h / 360, s / 100, l / 100); }
 function renkAdi(c) { if (c < 0.15) return 'kırmızı'; if (c < 0.35) return 'turuncu'; if (c < 0.62) return 'sarı'; if (c < 0.8) return 'sarı-yeşil'; return 'yeşil'; }
 
-function meyveSVG(m, boyut = 100) {
-  const f = renkHsl(m.c);
-  let govde = '';
-  if (m.tur === 'elma') {
-    const sx = 1 - m.s * 0.4;
-    govde = `<g transform="translate(50 56) scale(${sx.toFixed(2)} 1) translate(-50 -56)"><path d="M50 30 C 32 16, 8 28, 13 56 C 18 84, 40 94, 50 86 C 60 94, 82 84, 87 56 C 92 28, 68 16, 50 30 Z" fill="${f}" stroke="rgba(0,0,0,.25)" stroke-width="2"/><ellipse cx="34" cy="48" rx="7" ry="11" fill="#fff" opacity=".35"/></g><path d="M50 32 C 50 22, 52 16, 56 10" stroke="#6b4a2b" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M55 16 C 64 6, 76 10, 78 14 C 70 22, 60 22, 55 16 Z" fill="#4f9a3f"/>`;
-  } else if (m.tur === 'limon') {
-    const sx = 0.85 + (m.s - 0.3) * 0.9;
-    govde = `<g transform="translate(50 52) scale(${sx.toFixed(2)} 1) translate(-50 -52)"><path d="M10 52 Q 12 40, 22 34 Q 36 24, 50 24 Q 64 24, 78 34 Q 88 40, 90 52 Q 88 64, 78 70 Q 64 80, 50 80 Q 36 80, 22 70 Q 12 64, 10 52 Z" fill="${f}" stroke="rgba(0,0,0,.22)" stroke-width="2"/><path d="M4 52 Q 8 47, 11 52 Q 8 57, 4 52 Z M96 52 Q 92 47, 89 52 Q 92 57, 96 52 Z" fill="${f}" stroke="rgba(0,0,0,.22)" stroke-width="1.5"/><ellipse cx="36" cy="42" rx="10" ry="6" fill="#fff" opacity=".35"/></g>`;
-  } else if (m.tur === 'muz') {
-    const k = 0.8 + (m.s - 0.7) * 0.8;
-    govde = `<g transform="translate(50 50) scale(${k.toFixed(2)}) translate(-50 -50)"><path d="M10 36 Q 46 92, 90 30 Q 92 26, 88 24 Q 50 70, 16 30 Q 12 30, 10 36 Z" fill="${f}" stroke="rgba(0,0,0,.25)" stroke-width="2"/><path d="M86 25 L 94 16" stroke="#6b4a2b" stroke-width="5" stroke-linecap="round"/><path d="M11 35 L 7 38" stroke="#3a2a1a" stroke-width="4" stroke-linecap="round"/><path d="M22 42 Q 48 70, 78 40" stroke="#fff" stroke-width="3" fill="none" opacity=".35"/></g>`;
-  } else {
-    const rx = 22 + m.s * 24, ry = 30 - m.s * 14;
-    govde = `<ellipse cx="50" cy="54" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="${f}" stroke="rgba(0,0,0,.25)" stroke-width="2" stroke-dasharray="5 4"/><text x="50" y="64" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="30" font-weight="700" fill="rgba(0,0,0,.45)">?</text>`;
-  }
-  return `<svg viewBox="0 0 100 100" width="${boyut}" height="${boyut}" role="img" aria-label="${m.tur === 'hayal' ? 'hayalî meyve' : TUR[m.tur].ad}">${govde}</svg>`;
-}
-
-// ---------- Çıtır'ın beyni: en yakın komşular ----------
+// ---------- beyin: en yakın komşular ----------
 let hafiza = [];
 const K = 3;
-function komsular(p, k = K) {
-  return hafiza.map(h => ({ h, d: Math.hypot(h.s - p.s, h.c - p.c) })).sort((a, b) => a.d - b.d).slice(0, Math.min(k, hafiza.length));
-}
+const komsular = (p) => hafiza.map(h => ({ h, d: Math.hypot(h.s - p.s, h.c - p.c) })).sort((a, b) => a.d - b.d).slice(0, Math.min(K, hafiza.length));
 function tahmin(p) {
   if (!hafiza.length) return null;
-  const ks = komsular(p);
-  const oy = { elma: 0, limon: 0, muz: 0 };
+  const ks = komsular(p); const oy = { elma: 0, limon: 0, muz: 0 };
   ks.forEach((x, i) => { oy[x.h.etiket] += 1 + (i === 0 ? 0.01 : 0); });
-  const sonuc = TURLER.reduce((a, b) => oy[a] >= oy[b] ? a : b);
-  return { tur: sonuc, ks, oy };
+  return { tur: TURLER.reduce((a, b) => oy[a] >= oy[b] ? a : b), ks };
 }
 
-// ---------- harita ----------
-const cv = $('#harita'), g = cv.getContext('2d');
-let vurgulu = null; // {p, ks}
-function haritaBoyut() { const r = cv.getBoundingClientRect(); const dpr = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); ciz(); }
-const PAD = 14;
-const X = (s) => PAD + s * (cv.width - PAD * 2);
-const Y = (c) => PAD + c * (cv.height - PAD * 2);
-function renkAlfa(hex, a) { const c = hex.replace('#', ''); const n = parseInt(c.length === 3 ? c.split('').map(x => x + x).join('') : c, 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`; }
-function ikon(m, x, y, r, cerceve) {
-  g.save(); g.translate(x, y);
-  g.fillStyle = renkHsl(m.c); g.strokeStyle = cerceve; g.lineWidth = Math.max(2, r * 0.28);
-  g.beginPath();
-  if (m.gorunum === 'limon') g.ellipse(0, 0, r * 1.25, r * 0.85, 0, 0, Math.PI * 2);
-  if (m.gorunum === 'muz') { g.ellipse(0, 0, r * 1.45, r * 0.6, -0.35, 0, Math.PI * 2); }
-  if (m.gorunum === 'elma') g.arc(0, 0, r, 0, Math.PI * 2);
-  g.fill(); g.stroke(); g.restore();
+// =====================================================================
+//   SAHNE
+// =====================================================================
+const canvas = $('#sahne');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, HAFIF ? 1 : 1.75));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.95;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog('#cfe3ec', 45, 150);
+const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.1, 600);
+
+// pah gölgeli voksel malzemesi
+const kutuGeo = new THREE.BoxGeometry(1, 1, 1); kutuGeo.setAttribute('boxUv', kutuGeo.attributes.uv.clone());
+const voksMat = new THREE.MeshStandardMaterial({ roughness: 0.85 });
+voksMat.onBeforeCompile = (sh) => {
+  sh.vertexShader = 'attribute vec2 boxUv;\nvarying vec2 vFU;\nvarying vec2 vFS;\n' + sh.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
+    vec3 iS = vec3(length(instanceMatrix[0].xyz), length(instanceMatrix[1].xyz), length(instanceMatrix[2].xyz));
+    vec3 aN = abs(normal); vec2 fs = aN.x > 0.5 ? iS.zy : (aN.y > 0.5 ? iS.xz : iS.xy); vFS = fs; vFU = boxUv * fs;`);
+  sh.fragmentShader = 'varying vec2 vFU;\nvarying vec2 vFS;\n' + sh.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
+    { vec2 e2 = min(vFU, vFS - vFU); float dd = min(e2.x, e2.y); float bw = min(0.06, 0.28 * min(vFS.x, vFS.y));
+      float aa = length(fwidth(vFU)); float guc = 1.0 - smoothstep(bw * 0.45, bw * 1.6, aa);
+      diffuseColor.rgb *= mix(1.0, mix(0.78, 1.0, smoothstep(0.0, bw, dd)), guc); }`);
+};
+class Yigin {
+  constructor() { this.m = []; this.c = []; this.cer = [new THREE.Matrix4()]; }
+  get F() { return this.cer[this.cer.length - 1]; }
+  push(x, y, z, ry = 0) { this.cer.push(this.F.clone().multiply(new THREE.Matrix4().makeRotationY(ry).setPosition(x, y, z))); }
+  pop() { this.cer.pop(); }
+  kutu(cx, y0, cz, sx, sy, sz, renk, j = 0.04, rz = 0) {
+    const m = new THREE.Matrix4().compose(V(cx, y0 + sy / 2, cz), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, rz)), V(sx, sy, sz)).premultiply(this.F);
+    const c = C(renk); const k = 1 + (sabit() - 0.5) * 2 * j; c.r *= k; c.g *= k; c.b *= k;
+    this.m.push(m); this.c.push(c);
+  }
+  yap() {
+    const im = new THREE.InstancedMesh(kutuGeo.clone(), voksMat, this.m.length);
+    this.m.forEach((m, i) => { im.setMatrixAt(i, m); im.setColorAt(i, this.c[i]); });
+    im.castShadow = true; im.receiveShadow = true; im.computeBoundingSphere(); return im;
+  }
 }
-function ciz() {
-  const W = cv.width, H = cv.height; g.clearRect(0, 0, W, H);
-  const cz = renkVar('cizgi');
-  // bölgeler
-  if ($('#bolgeGoster').checked && hafiza.length) {
-    const N = 46, cw = (W - PAD * 2) / N, ch = (H - PAD * 2) / N;
-    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
-      const p = { s: (i + 0.5) / N, c: (j + 0.5) / N }; const t = tahmin(p);
-      const x0 = Math.round(PAD + i * cw), x1 = Math.round(PAD + (i + 1) * cw), y0 = Math.round(PAD + j * ch), y1 = Math.round(PAD + (j + 1) * ch);
-      g.fillStyle = renkAlfa(renkVar(t.tur), 0.22); g.fillRect(x0, y0, x1 - x0, y1 - y0);
+
+// gökyüzü
+const gokMat = new THREE.ShaderMaterial({ side: THREE.BackSide, depthWrite: false, fog: false,
+  uniforms: { uTime: { value: 0 } },
+  vertexShader: 'varying vec3 vD; void main(){ vD = position; vec4 p = projectionMatrix*modelViewMatrix*vec4(position,1.0); gl_Position = p.xyww; }',
+  fragmentShader: `uniform float uTime; varying vec3 vD;
+    float h21(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453); }
+    float vn(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f); return mix(mix(h21(i),h21(i+vec2(1,0)),f.x), mix(h21(i+vec2(0,1)),h21(i+vec2(1,1)),f.x), f.y); }
+    void main(){ vec3 d = normalize(vD); float h = d.y;
+      vec3 c = mix(vec3(0.80,0.90,0.94), vec3(0.24,0.56,0.86), pow(clamp(h,0.0,1.0),0.55));
+      vec3 sun = normalize(vec3(-0.5,0.55,0.65)); float s = max(dot(d,sun),0.0); c += vec3(1.0,0.93,0.8)*(pow(s,400.0)*2.0+pow(s,8.0)*0.2);
+      if (h > 0.0) { vec2 uv = d.xz/(h+0.15)*1.4 + vec2(uTime*0.005,0.0); float n = vn(uv*1.4)*0.55+vn(uv*3.0)*0.3+vn(uv*6.0)*0.15; float b = smoothstep(0.55,0.82,n)*smoothstep(0.0,0.2,h); c = mix(c, vec3(1.0), b*0.75); }
+      gl_FragColor = vec4(c,1.0);
+      #include <tonemapping_fragment>
+      #include <colorspace_fragment>
+    }` });
+const gok = new THREE.Mesh(new THREE.SphereGeometry(500, 32, 16), gokMat); gok.frustumCulled = false; scene.add(gok);
+scene.add(new THREE.HemisphereLight('#d6ecff', '#8c7a55', 0.9));
+const gunes = new THREE.DirectionalLight('#fff1dc', 2.6);
+gunes.position.set(-18, 22, 24); gunes.target.position.set(0, 0, -2);
+gunes.castShadow = true; gunes.shadow.mapSize.set(HAFIF ? 1024 : 2048, HAFIF ? 1024 : 2048);
+Object.assign(gunes.shadow.camera, { left: -20, right: 20, top: 16, bottom: -16, near: 1, far: 90 });
+gunes.shadow.bias = -0.0004; gunes.shadow.normalBias = 0.03;
+scene.add(gunes, gunes.target);
+
+// kanvas dokuları
+function doku(w, h, ciz) { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); ciz(g, w, h); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; t.userData = { c, g }; return t; }
+const FB = '"Fredoka","Trebuchet MS",sans-serif';
+function yazi(g, metin, x, y, boy, renk, hiza = 'center', agirlik = 700) { g.font = `${agirlik} ${boy}px ${FB}`; g.fillStyle = renk; g.textAlign = hiza; g.textBaseline = 'middle'; g.fillText(metin, x, y); }
+function duzlem(w, h, t, o = {}) { return new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: t, transparent: !!o.saydam, toneMapped: false, side: THREE.DoubleSide })); }
+
+// ---------- 3B meyve modelleri (voksel) ----------
+const meyveMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.55 });
+function voxGeo(liste, v) {
+  const gs = liste.map(([x, y, z, col]) => { const g = new THREE.BoxGeometry(v, v, v); g.translate(x * v, y * v, z * v); const n = g.attributes.position.count; const a = new Float32Array(n * 3); for (let i = 0; i < n; i++) { a[i * 3] = col.r; a[i * 3 + 1] = col.g; a[i * 3 + 2] = col.b; } g.setAttribute('color', new THREE.BufferAttribute(a, 3)); return g; });
+  const m = mergeGeometries(gs); gs.forEach(g => g.dispose()); return m;
+}
+const meyveOnbellek = new Map();
+function meyveGeo(m) {
+  const key = m.tur + '|' + m.s.toFixed(2) + '|' + m.c.toFixed(2);
+  if (meyveOnbellek.has(key)) return meyveOnbellek.get(key);
+  const renk = renkHsl(m.c); const L = [];
+  const ton = (x, y, z) => { const k = 0.9 + hash2(x * 3.1 + y, z * 1.7 - y) * 0.2 + (y > 0 ? 0.06 : -0.04); return renk.clone().multiplyScalar(k); };
+  const kahve = C('#6b4a2b'), yaprak = C('#4f9a3f');
+  const dolu = (f) => { const set = new Set(); const pts = []; for (let x = -8; x <= 8; x++) for (let y = -6; y <= 7; y++) for (let z = -6; z <= 6; z++) if (f(x, y, z)) { set.add(x + ',' + y + ',' + z); pts.push([x, y, z]); } return pts.filter(([x, y, z]) => !(set.has((x + 1) + ',' + y + ',' + z) && set.has((x - 1) + ',' + y + ',' + z) && set.has(x + ',' + (y + 1) + ',' + z) && set.has(x + ',' + (y - 1) + ',' + z) && set.has(x + ',' + y + ',' + (z + 1)) && set.has(x + ',' + y + ',' + (z - 1)))); };
+  if (m.tur === 'elma') {
+    const sx = 1 - m.s * 0.5;
+    dolu((x, y, z) => { const r = Math.hypot(x / (3.4 * sx), (y + 0.2) / 3.2, z / 3.4); if (r > 1) return false; if (y >= 2 && Math.hypot(x, z) < 1.2) return false; return true; }).forEach(([x, y, z]) => L.push([x, y, z, ton(x, y, z)]));
+    L.push([0, 2, 0, kahve], [0, 3, 0, kahve], [0.5, 4, 0, kahve], [1.5, 4, 0, yaprak], [2.3, 4.3, 0, yaprak]);
+  } else if (m.tur === 'limon') {
+    const rx = 4 * (0.85 + (m.s - 0.3) * 0.9);
+    dolu((x, y, z) => Math.hypot(x / rx, y / 2.9, z / 2.9) <= 1).forEach(([x, y, z]) => L.push([x, y, z, ton(x, y, z)]));
+    L.push([Math.round(rx) + 1, 0, 0, ton(9, 0, 0)], [-Math.round(rx) - 1, 0, 0, ton(-9, 0, 0)]);
+  } else if (m.tur === 'muz') {
+    const uz = 6 + (m.s - 0.7) * 8; const n = Math.round(uz * 2);
+    const set = new Set();
+    for (let i = 0; i <= n; i++) {
+      const t = i / n; const x = Math.round((t - 0.5) * uz * 2); const y = Math.round(-Math.sin(Math.PI * t) * 3.2 + 1.6);
+      for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) { if (Math.abs(a) + Math.abs(b) > 1 && t > 0.12 && t < 0.88) continue; if ((t <= 0.12 || t >= 0.88) && (a || b)) continue; const k = x + ',' + (y + a) + ',' + b; if (set.has(k)) continue; set.add(k); L.push([x, y + a, b, (t < 0.06) ? C('#3a2a1a') : (t > 0.95 ? kahve : ton(x, y + a, b))]); }
+    }
+  } else {
+    const rx = 2.4 + m.s * 3.2, ry = 3.2 - m.s * 1.4;
+    dolu((x, y, z) => Math.hypot(x / rx, y / ry, z / 2.6) <= 1).forEach(([x, y, z]) => L.push([x, y, z, ton(x, y, z)]));
+  }
+  const g = voxGeo(L, 0.075); meyveOnbellek.set(key, g); return g;
+}
+function meyveMesh(m, olcek = 1) { const me = new THREE.Mesh(meyveGeo(m), meyveMat); me.scale.setScalar(olcek); me.castShadow = true; me.receiveShadow = true; return me; }
+
+// =====================================================================
+//   ATÖLYE VE BAHÇE
+// =====================================================================
+const D = {};
+async function kur() {
+  try { await Promise.race([Promise.all(['700 40px Fredoka', '700 20px Nunito'].map(f => document.fonts.load(f))), new Promise(r => setTimeout(r, 2500))]); } catch (e) {}
+  ilerle(0.3, 'Bahçe dikiliyor…'); await bekle();
+  const Y = new Yigin();
+  // zemin
+  const cim = ['#6fa04a', '#78aa52', '#669a44', '#80b25a'];
+  for (let x = -40; x < 40; x++) for (let z = -44; z < 16; z++) {
+    const deck = x >= -10 && x < 8 && z >= -4 && z < 4;
+    const n = vnoise(x * 0.12, z * 0.12);
+    let h = deck ? 0 : Math.round((n * 0.5 + Math.max(0, -z - 16) * 0.06) / 0.125) * 0.125;
+    if (Math.abs(x) > 24) h += (Math.abs(x) - 24) * 0.12;
+    const yol = Math.abs(z - 6.5 + x * 0.05) < 1.1 && !deck;
+    Y.kutu(x + 0.5, -1.5, z + 0.5, 1, h + 1.5 - (deck ? 0.2 : 0), 1, yol ? spick(['#c9b58e', '#bfa983']) : spick(cim), 0.05);
+    if (!deck && !yol && sabit() < 0.25) Y.kutu(x + SR(0.2, 0.8), h, z + SR(0.2, 0.8), 0.07, SR(0.1, 0.22), 0.07, sabit() < 0.15 ? spick(['#f2c14e', '#ffffff', '#e0567a']) : spick(['#5f9442', '#76ab52']), 0.05);
+  }
+  // ahşap platform
+  for (let z = -4; z < 4; z += 0.5) Y.kutu(-1, -0.2, z + 0.25, 18, 0.2, 0.46, spick(['#b08a5e', '#a47f55', '#b8946a']), 0.03);
+  for (const x of [-10, 8]) for (let z = -4; z < 4; z += 2) Y.kutu(x, -0.6, z + 1, 0.3, 0.6, 0.3, '#6b4a33', 0.03);
+  // bahçe: elma, limon ağaçları ve muz fidanları
+  const agac = (x, z, meyveRenk, s = 1) => {
+    const y = 0;
+    Y.kutu(x, y - 0.3, z, 0.5 * s, 2.4 * s, 0.5 * s, '#6b4a33', 0.06);
+    Y.kutu(x + 0.4 * s, 1.4 * s, z, 0.9 * s, 0.25 * s, 0.25 * s, '#6b4a33', 0.06);
+    for (let i = 0; i < 26; i++) { const a = sabit() * 6.28, r = Math.sqrt(sabit()) * 1.9 * s; const b = SR(0.6, 1.0) * s; Y.kutu(x + Math.cos(a) * r, y + 2.1 * s + SR(-0.5, 1.6) * s, z + Math.sin(a) * r, b, b * 0.85, b, spick(['#4f8739', '#5d9442', '#6aa24b', '#477d33']), 0.05); }
+    for (let i = 0; i < 12; i++) { const a = sabit() * 6.28, r = SR(1.4, 2.1) * s; Y.kutu(x + Math.cos(a) * r, y + 2.2 * s + SR(-0.2, 1.3) * s, z + Math.sin(a) * r, 0.3, 0.3, 0.3, typeof meyveRenk === 'function' ? meyveRenk() : meyveRenk, 0.08); }
+  };
+  const muzFidan = (x, z) => {
+    for (let k = 0; k < 7; k++) Y.kutu(x, k * 0.5, z, 0.45 - k * 0.02, 0.5, 0.45 - k * 0.02, k % 2 ? '#7c8f47' : '#6f8440', 0.04);
+    for (let i = 0; i < 6; i++) { Y.push(x, 3.4, z, i * Math.PI / 3); for (let k = 0; k < 5; k++) Y.kutu(0.4 + k * 0.45, 0.1 - k * k * 0.05, 0, 0.5, 0.1, 0.55 - k * 0.04, spick(['#5f9a3c', '#6aaa45']), 0.05); Y.pop(); }
+    for (let i = 0; i < 5; i++) Y.kutu(x + 0.35, 2.4 - i * 0.18, z + 0.1, 0.5, 0.14, 0.28, '#e7c63b', 0.06);
+  };
+  for (let i = 0; i < 7; i++) agac(-26 + i * 5.2 + SR(-0.6, 0.6), -11 + SR(-1, 1), () => spick(['#d8433a', '#c93a30', '#8cc03c']), SR(0.9, 1.1));
+  for (let i = 0; i < 6; i++) agac(-23 + i * 6 + SR(-0.6, 0.6), -18 + SR(-1, 1), '#f0c419', SR(0.85, 1.0));
+  for (let i = 0; i < 8; i++) muzFidan(-28 + i * 7 + SR(-1, 1), -24 + SR(-1, 1));
+  for (let i = 0; i < 40; i++) { const x = SR(-38, 38), z = SR(-42, -28); agac(x, z, spick(['#d8433a', '#f0c419', '#8cc03c']), SR(0.9, 1.3)); }
+  for (const [x, z] of [[-17, 2], [-15, 9], [14, 3], [17, 10], [12, -6], [-13, -5]]) agac(x, z, spick(['#d8433a', '#f0c419']), 1.05);
+  // bant
+  const bz = 1.4, by = 0.95;
+  D.bant = { z: bz, y: by, x0: -11, x1: -2.9 };
+  Y.kutu((D.bant.x0 + D.bant.x1) / 2, by - 0.18, bz, D.bant.x1 - D.bant.x0, 0.14, 1.3, '#4b5560', 0.02);
+  for (const s of [-1, 1]) Y.kutu((D.bant.x0 + D.bant.x1) / 2, by - 0.06, bz + s * 0.62, D.bant.x1 - D.bant.x0, 0.16, 0.08, '#e0a93a', 0.02);
+  for (let x = D.bant.x0 + 0.6; x < D.bant.x1; x += 1.6) for (const s of [-1, 1]) Y.kutu(x, 0, bz + s * 0.52, 0.12, by - 0.18, 0.12, '#3a4048', 0.02);
+  // bahçeden gelen meyve kasası (bandın başı)
+  Y.push(-11.2, 0, bz, 0); Y.kutu(0, 0, 0, 1.6, 1.4, 1.6, '#a4784a', 0.04); for (let i = 0; i < 4; i++) Y.kutu(0, 0.1 + i * 0.34, 0.81, 1.62, 0.12, 0.04, '#8a6038', 0.03);
+  for (let i = 0; i < 8; i++) Y.kutu(SR(-0.5, 0.5), 1.35, SR(-0.5, 0.5), 0.34, 0.3, 0.34, spick(['#d8433a', '#f0c419', '#e7c63b', '#8cc03c']), 0.06);
+  Y.pop();
+  // sepetler
+  D.sepetler = {};
+  [['elma', 0.3], ['limon', 2.0], ['muz', 3.7]].forEach(([t, x]) => {
+    const z = 1.7;
+    for (let i = 0; i < 16; i++) { Y.push(x, 0, z, i * Math.PI / 8); Y.kutu(0, 0, 0.62, 0.3, 0.62, 0.1, i % 2 ? '#b98a4e' : '#a7783f', 0.05); Y.pop(); }
+    Y.kutu(x, 0, z, 1.1, 0.1, 1.1, '#8a6038', 0.03);
+    for (let i = 0; i < 16; i++) { Y.push(x, 0, z, i * Math.PI / 8); Y.kutu(0, 0.62, 0.64, 0.3, 0.1, 0.14, RENK[t], 0.02); Y.pop(); }
+    const lbl = doku(512, 200, (g, w, h) => { g.fillStyle = '#fffdf6'; g.beginPath(); g.roundRect(6, 6, w - 12, h - 12, 30); g.fill(); g.lineWidth = 12; g.strokeStyle = RENK[t]; g.stroke(); yazi(g, TR_UP(AD[t]), w / 2, h / 2 + 6, 104, '#1c2b33'); });
+    const p = duzlem(0.95, 0.37, lbl); p.position.set(x, 0.32, z + 0.72); scene.add(p);
+    D.sepetler[t] = { x, z, adet: 0, meyveler: [] };
+  });
+  // beyin panosu (arka)
+  D.pano = { x: 2.4, y: 3.45, z: -2.4, w: 6.8, h: 4.4 };
+  const P = D.pano;
+  for (const s of [-1, 1]) { Y.kutu(P.x + s * 3.2, 0, P.z - 0.1, 0.24, P.y - P.h / 2 + 0.2, 0.24, '#2a3a40', 0.02); Y.kutu(P.x + s * 3.2, 0, P.z - 0.1, 0.7, 0.14, 0.7, '#2a3a40', 0.02); }
+  Y.kutu(P.x, P.y - P.h / 2 - 0.12, P.z - 0.12, P.w + 0.3, P.h + 0.24, 0.16, '#2a3a40', 0.02);
+  // Çıtır'dan panoya kablo
+  for (let i = 0; i < 9; i++) Y.kutu(-1.35 + i * 0.07, 1.9 + Math.sin(i / 8 * Math.PI) * 0.35 + i * 0.02, -1.4 - i * 0.1, 0.14, 0.1, 0.14, '#ff7a3d', 0.02);
+  // lamba direkleri ve kasalar
+  for (const [x, z] of [[-9.2, -3.2], [7.2, -3.2]]) { Y.kutu(x, 0, z, 0.16, 3.2, 0.16, '#2a2d30', 0.02); Y.kutu(x, 3.2, z, 0.5, 0.5, 0.5, '#f3ead0', 0.02); Y.kutu(x, 3.7, z, 0.6, 0.1, 0.6, '#2a2d30', 0.02); }
+  for (const [x, z] of [[6.4, 2.9], [7.0, 2.3], [-8.6, -2.6]]) Y.kutu(x, 0, z, 0.8, 0.6, 0.8, '#b08a5a', 0.05);
+  ilerle(0.6, 'Çıtır uyanıyor…'); await bekle();
+  scene.add(Y.yap());
+
+  // pano yüzeyi (ışıklı, gölge almaz)
+  const panoG = new THREE.Group(); panoG.position.set(P.x, P.y, P.z); scene.add(panoG); D.panoG = panoG;
+  const zeminM = new THREE.Mesh(new THREE.PlaneGeometry(P.w, P.h), new THREE.MeshBasicMaterial({ color: '#10262b', toneMapped: false })); panoG.add(zeminM);
+  for (const [w, h, x, y] of [[P.w, 0.05, 0, P.h / 2 - 0.025], [P.w, 0.05, 0, -P.h / 2 + 0.025], [0.05, P.h, P.w / 2 - 0.025, 0], [0.05, P.h, -P.w / 2 + 0.025, 0]]) { const f = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: '#35d0c4', toneMapped: false })); f.position.set(x, y, 0.01); panoG.add(f); }
+  // harita alanı
+  D.harita = { x0: -2.55, x1: 3.05, y0: -1.55, y1: 1.45 };
+  const H = D.harita; const MW = H.x1 - H.x0, MH = H.y1 - H.y0;
+  D.haritaXY = (s, c) => V(H.x0 + s * MW, H.y1 - c * MH, 0);
+  const NX = 28, NY = 15;
+  const karo = new THREE.InstancedMesh(new THREE.PlaneGeometry(MW / NX * 0.94, MH / NY * 0.9), new THREE.MeshBasicMaterial({ toneMapped: false }), NX * NY);
+  const mm = new THREE.Matrix4();
+  for (let i = 0; i < NX; i++) for (let j = 0; j < NY; j++) { mm.makeTranslation(H.x0 + (i + 0.5) * MW / NX, H.y1 - (j + 0.5) * MH / NY, 0.02); karo.setMatrixAt(i * NY + j, mm); karo.setColorAt(i * NY + j, C('#1a3a41')); }
+  panoG.add(karo); D.karo = { im: karo, NX, NY };
+  const serit = duzlem(0.16, MH, doku(16, 256, (g, w, h) => { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, 'hsl(2,78%,52%)'); gr.addColorStop(0.5, 'hsl(48,92%,55%)'); gr.addColorStop(1, 'hsl(100,55%,45%)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); }));
+  serit.position.set(H.x0 - 0.22, (H.y0 + H.y1) / 2, 0.02); panoG.add(serit);
+  const etiket = (metin, w, h, x, y, boy = 70, renk = '#cdeeea', hiza = 'center') => { const t = doku(Math.round(w * 200), Math.round(h * 200), (g, cw, ch) => yazi(g, metin, hiza === 'left' ? 4 : hiza === 'right' ? cw - 4 : cw / 2, ch / 2, boy, renk, hiza)); const p = duzlem(w, h, t, { saydam: true }); p.position.set(x, y, 0.03); panoG.add(p); return p; };
+  etiket("ÇITIR'IN BEYNİ", 3.6, 0.5, 0.25, 1.88, 84, '#ffffff');
+  etiket('Renk', 0.8, 0.3, H.x0 - 0.22, H.y1 + 0.2, 52, '#cdeeea');
+  etiket('Uzunluk →', 1.6, 0.3, (H.x0 + H.x1) / 2, H.y0 - 0.28, 52, '#cdeeea');
+  etiket('yuvarlak', 1.2, 0.26, H.x0 + 0.6, H.y0 - 0.28, 44, '#9cc9c4');
+  etiket('uzun', 0.8, 0.26, H.x1 - 0.4, H.y0 - 0.28, 44, '#9cc9c4');
+  D.bosYazi = etiket('Beyin boş. Henüz hiç örnek yok.', 5.4, 0.4, (H.x0 + H.x1) / 2, (H.y0 + H.y1) / 2, 50, '#7fb3ae');
+  D.sayac = etiket('', 2.6, 0.32, H.x1 - 1.2, 1.88, 46, '#9cc9c4', 'right');
+  D.isaretler = new THREE.Group(); panoG.add(D.isaretler);
+  D.cizgiler = new THREE.Group(); panoG.add(D.cizgiler);
+
+  // Çıtır
+  const robot = new THREE.Group(); robot.position.set(-1.95, 0, -0.1); robot.rotation.y = 0.3; scene.add(robot); D.robot = robot;
+  const rm = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.45, metalness: 0.1, ...o });
+  const B = (sx, sy, sz, x, y, z, mat, p = robot) => { const b = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), mat); b.position.set(x, y, z); b.castShadow = true; b.receiveShadow = true; p.add(b); return b; };
+  const teal = rm('#1f8a8a'), tealK = rm('#146266'), koyu = rm('#1d2b30'), turuncu = rm('#ff7a3d', { emissive: C('#ff7a3d'), emissiveIntensity: 0.4 });
+  B(1.3, 0.28, 1.0, 0, 0.14, 0, koyu); for (const s of [-1, 1]) B(0.28, 0.42, 1.1, s * 0.62, 0.21, 0, rm('#2a3a40'));
+  const govde = new THREE.Group(); govde.position.y = 0.4; robot.add(govde); D.govde = govde;
+  B(1.1, 0.95, 0.8, 0, 0.48, 0, teal, govde); B(0.7, 0.4, 0.04, 0, 0.55, 0.41, koyu, govde);
+  const isikl = []; ['#ff7a3d', '#7df3e1', '#f2c230'].forEach((c, i) => { isikl.push(B(0.12, 0.12, 0.05, -0.2 + i * 0.2, 0.55, 0.44, rm(c, { emissive: C(c), emissiveIntensity: 0.8 }), govde)); });
+  D.isikl = isikl;
+  B(0.3, 0.2, 0.3, 0, 1.02, 0, tealK, govde);
+  const bas = new THREE.Group(); bas.position.y = 1.12; govde.add(bas); D.bas = bas;
+  B(1.3, 0.95, 0.9, 0, 0.48, 0, teal, bas);
+  for (const s of [-1, 1]) B(0.14, 0.4, 0.4, s * 0.72, 0.48, 0, tealK, bas);
+  B(0.06, 0.5, 0.06, 0, 1.2, 0, tealK, bas);
+  D.anten = B(0.2, 0.2, 0.2, 0, 1.5, 0, turuncu, bas);
+  const yuzD = doku(320, 220, () => {}); D.yuzDoku = yuzD;
+  const yuz = new THREE.Mesh(new THREE.PlaneGeometry(1.08, 0.74), new THREE.MeshBasicMaterial({ map: yuzD, toneMapped: false })); yuz.position.set(0, 0.48, 0.456); bas.add(yuz);
+  const kol = (s) => { const g = new THREE.Group(); g.position.set(s * 0.66, 0.85, 0); govde.add(g); B(0.22, 0.7, 0.22, 0, -0.35, 0, tealK, g); B(0.32, 0.18, 0.32, 0, -0.74, 0, koyu, g); return g; };
+  D.kolL = kol(-1); D.kolR = kol(1);
+  yuzCiz('normal');
+
+  // bant yüzeyi (kayan doku)
+  const bantD = doku(64, 64, (g, w, h) => { g.fillStyle = '#2f353c'; g.fillRect(0, 0, w, h); g.fillStyle = '#3c434b'; g.fillRect(0, 0, 10, h); });
+  bantD.wrapS = bantD.wrapT = THREE.RepeatWrapping; bantD.repeat.set((D.bant.x1 - D.bant.x0) * 1.5, 1);
+  const bantY = new THREE.Mesh(new THREE.PlaneGeometry(D.bant.x1 - D.bant.x0, 1.1), new THREE.MeshStandardMaterial({ map: bantD, roughness: 0.9 }));
+  bantY.rotation.x = -Math.PI / 2; bantY.position.set((D.bant.x0 + D.bant.x1) / 2, by + 0.005, bz); bantY.receiveShadow = true; scene.add(bantY); D.bantDoku = bantD;
+  // tarama ışını
+  const tarama = new THREE.Mesh(new THREE.ConeGeometry(0.35, 1, 24, 1, true), new THREE.MeshBasicMaterial({ color: '#7df3e1', transparent: true, opacity: 0.25, depthWrite: false, side: THREE.DoubleSide, toneMapped: false }));
+  tarama.visible = false; scene.add(tarama); D.tarama = tarama;
+}
+
+// Çıtır'ın yüz ifadeleri (ekran)
+function yuzCiz(durum, ikonTur) {
+  const t = D.yuzDoku; if (!t) return; const g = t.userData.g, w = 320, h = 220;
+  g.fillStyle = '#10262b'; g.fillRect(0, 0, w, h);
+  g.fillStyle = '#7df3e1'; g.strokeStyle = '#7df3e1'; g.lineWidth = 12; g.lineCap = 'round';
+  const gozY = 88;
+  if (ikonTur) { g.fillStyle = RENK[ikonTur]; g.beginPath(); g.arc(w / 2, 92, 52, 0, 7); g.fill(); yazi(g, TR_UP(AD[ikonTur]), w / 2, 180, 40, '#7df3e1'); t.needsUpdate = true; return; }
+  if (durum === 'mutlu') { for (const x of [100, 220]) { g.beginPath(); g.arc(x, gozY + 14, 26, Math.PI * 1.1, Math.PI * 1.9); g.stroke(); } }
+  else if (durum === 'sasir') { for (const x of [100, 220]) { g.beginPath(); g.arc(x, gozY, 24, 0, 7); g.stroke(); } }
+  else if (durum === 'dusun') { g.fillRect(78, gozY - 6, 44, 14); g.fillRect(198, gozY - 26, 44, 50); }
+  else { g.fillRect(80, gozY - 26, 40, 52); g.fillRect(200, gozY - 26, 40, 52); }
+  g.beginPath();
+  if (durum === 'mutlu') g.arc(w / 2, 140, 40, 0.15 * Math.PI, 0.85 * Math.PI);
+  else if (durum === 'sasir') g.arc(w / 2, 162, 12, 0, 7);
+  else if (durum === 'dusun') { g.moveTo(130, 165); g.lineTo(190, 158); }
+  else { g.moveTo(135, 160); g.quadraticCurveTo(160, 172, 185, 160); }
+  g.stroke();
+  t.needsUpdate = true;
+}
+
+// ---------- beyin panosunu güncelle ----------
+const karoRenk = new THREE.Color();
+const PANO_ZEMIN = C('#1a3a41');
+function panoGuncelle() {
+  const { im, NX, NY } = D.karo;
+  const goster = $('#dBolge').getAttribute('aria-pressed') === 'true';
+  for (let i = 0; i < NX; i++) for (let j = 0; j < NY; j++) {
+    if (!hafiza.length || !goster) karoRenk.copy(PANO_ZEMIN);
+    else { const t = tahmin({ s: (i + 0.5) / NX, c: (j + 0.5) / NY }); karoRenk.copy(PANO_ZEMIN).lerp(C(RENK[t.tur]), 0.34); }
+    im.setColorAt(i * NY + j, karoRenk);
+  }
+  im.instanceColor.needsUpdate = true;
+  D.bosYazi.visible = !hafiza.length;
+  const sd = D.sayac.material.map; const g = sd.userData.g; g.clearRect(0, 0, sd.userData.c.width, sd.userData.c.height);
+  yazi(g, `${hafiza.length} örnek`, sd.userData.c.width - 4, sd.userData.c.height / 2, 46, '#9cc9c4', 'right'); sd.needsUpdate = true;
+  // işaretler
+  const mevcut = new Map(D.isaretler.children.map(g => [g.userData.h, g]));
+  for (const [h, g] of mevcut) if (!hafiza.includes(h)) D.isaretler.remove(g);
+  hafiza.forEach(h => {
+    if (mevcut.has(h)) return;
+    const g2 = new THREE.Group(); g2.userData.h = h;
+    const halka = new THREE.Mesh(new THREE.CircleGeometry(0.15, 24), new THREE.MeshBasicMaterial({ color: RENK[h.etiket], toneMapped: false })); halka.position.z = 0.03; g2.add(halka);
+    const me = meyveMesh({ tur: h.gorunum, s: h.s, c: h.c }, 0.32); me.castShadow = false; me.position.z = 0.12; me.rotation.y = 0.4; g2.add(me);
+    g2.position.copy(D.haritaXY(h.s, h.c)); g2.userData.dogum = zaman; g2.scale.setScalar(0.01);
+    D.isaretler.add(g2);
+  });
+  lejantGuncelle();
+}
+function komsuCiz(p, ks) {
+  D.cizgiler.clear();
+  if (!p) return;
+  const a = D.haritaXY(p.s, p.c); a.z = 0.2;
+  const soru = new THREE.Group(); soru.position.copy(a);
+  const cm = new THREE.Mesh(new THREE.CircleGeometry(0.2, 32), new THREE.MeshBasicMaterial({ color: '#ffffff', toneMapped: false })); soru.add(cm);
+  const qt = doku(128, 128, (g) => yazi(g, '?', 64, 70, 100, '#10262b'));
+  const q = duzlem(0.34, 0.34, qt, { saydam: true }); q.position.z = 0.01; soru.add(q);
+  soru.userData.nabiz = true; D.cizgiler.add(soru);
+  const cizgiMat = new THREE.MeshBasicMaterial({ color: '#ffffff', toneMapped: false, transparent: true, opacity: 0.9 });
+  ks.forEach(k => {
+    const b = D.haritaXY(k.h.s, k.h.c); b.z = 0.18; const L = a.distanceTo(b);
+    const n = Math.max(1, Math.floor(L / 0.14));
+    for (let i = 0; i < n; i += 2) { const t0 = i / n, t1 = Math.min(1, (i + 1) / n); const s = new THREE.Mesh(new THREE.PlaneGeometry(L * (t1 - t0), 0.035), cizgiMat); s.position.copy(a.clone().lerp(b, (t0 + t1) / 2)); s.rotation.z = Math.atan2(b.y - a.y, b.x - a.x); D.cizgiler.add(s); }
+  });
+  if (ks.length) {
+    const H = D.harita; const R0 = ks[ks.length - 1].d;
+    const halka = new THREE.Mesh(new THREE.RingGeometry(0.97, 1, 64), new THREE.MeshBasicMaterial({ color: '#ff7a3d', toneMapped: false, transparent: true, opacity: 0.85 }));
+    halka.scale.set(R0 * (H.x1 - H.x0) + 0.2, R0 * (H.y1 - H.y0) + 0.2, 1); halka.position.copy(a); halka.position.z = 0.16; D.cizgiler.add(halka);
+  }
+}
+function lejantGuncelle() { document.querySelectorAll('[data-say]').forEach(e => { e.textContent = hafiza.filter(h => h.etiket === e.dataset.say).length + ' örnek'; }); }
+
+// ---------- sepetlerdeki meyveler ----------
+function sepeteKoy(t, m, animasyon = true, basla) {
+  const S = D.sepetler[t]; const i = S.adet++;
+  if (i >= 14) return null;
+  const hedef = V(S.x + Math.cos(i * 2.4) * 0.28 * Math.min(1, i / 3), 0.28 + Math.floor(i / 5) * 0.2, S.z + Math.sin(i * 2.4) * 0.28 * Math.min(1, i / 3));
+  const me = meyveMesh(m, 0.55); me.rotation.set(R(-0.4, 0.4), R(0, 6), R(-0.4, 0.4)); scene.add(me); S.meyveler.push(me);
+  if (animasyon) ucur(me, basla || D.durak.clone(), hedef, 0.8, 1.6); else me.position.copy(hedef);
+  return me;
+}
+function sepetleriBosalt() { for (const t of TURLER) { const S = D.sepetler[t]; S.meyveler.forEach(m => scene.remove(m)); S.meyveler = []; S.adet = 0; } }
+function hafizaYukle(liste) { hafiza = []; sepetleriBosalt(); liste.forEach(x => { hafiza.push(x); sepeteKoy(x.etiket, { tur: x.gorunum, s: x.s, c: x.c }, false); }); panoGuncelle(); }
+
+// ---------- animasyonlar ----------
+const animler = [];
+function ucur(obj, a, b, sure, yuk = 1.2, bitti) { animler.push({ tip: 'ucus', obj, a: a.clone(), b: b.clone(), t: 0, sure: AZ ? sure * 0.4 : sure, yuk, bitti }); }
+function kivilcim(a, bPano, bitti) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.14), new THREE.MeshBasicMaterial({ color: '#7df3e1', toneMapped: false })); scene.add(m);
+  const b = D.panoG.localToWorld(bPano.clone().setZ(0.2));
+  ucur(m, a, b, 0.9, 2.2, () => { scene.remove(m); if (bitti) bitti(); });
+}
+let bantHareket = 0;
+D.durak = V(-3.45, 0.95 + 0.3, 1.4);
+let bantMeyve = null;
+function bandaGetir(m, etiket, bitti) {
+  if (bantMeyve) { const eski = bantMeyve; animler.push({ tip: 'kaybol', obj: eski, t: 0 }); }
+  bantMeyve = m ? meyveMesh(m, 1) : null;
+  gozGuncelle(m);
+  if (!m) return bitti && bitti();
+  bantMeyve.position.set(D.bant.x0 + 0.4, D.durak.y + 0.6, D.bant.z); bantMeyve.rotation.y = 0.4; scene.add(bantMeyve);
+  animler.push({ tip: 'bant', obj: bantMeyve, t: 0, sure: AZ ? 0.4 : 1.4, bitti });
+}
+function tara(bitti) {
+  const T = D.tarama; T.visible = true; animler.push({ tip: 'tara', t: 0, sure: AZ ? 0.3 : 0.9, bitti });
+}
+function gozGuncelle(m) {
+  if (m) { $('#gUzun').textContent = m.s.toFixed(2); $('#gUzunI').style.left = (m.s * 100) + '%'; $('#gRenk').textContent = m.c.toFixed(2) + ' · ' + renkAdi(m.c); $('#gRenkI').style.left = (m.c * 100) + '%'; }
+  else { $('#gUzun').textContent = '–'; $('#gRenk').textContent = '–'; }
+}
+let zaman = 0;
+function animGuncelle(dt) {
+  for (let i = animler.length - 1; i >= 0; i--) {
+    const a = animler[i];
+    if (a.tip === 'ucus') {
+      a.t = Math.min(1, a.t + dt / a.sure); const e = ease(a.t);
+      a.obj.position.lerpVectors(a.a, a.b, e); a.obj.position.y += Math.sin(Math.PI * e) * a.yuk; a.obj.rotation.x += dt * 4;
+      if (a.t >= 1) { a.obj.position.copy(a.b); animler.splice(i, 1); if (a.bitti) a.bitti(); }
+    } else if (a.tip === 'bant') {
+      a.t = Math.min(1, a.t + dt / a.sure); const e = 1 - Math.pow(1 - a.t, 3);
+      a.obj.position.x = lerp(D.bant.x0 + 0.4, D.durak.x, e); a.obj.position.y = D.durak.y + Math.max(0, 0.6 - a.t * 3) ; bantHareket = a.t < 1 ? 1 : 0;
+      if (a.t >= 1) { animler.splice(i, 1); if (a.bitti) a.bitti(); }
+    } else if (a.tip === 'kaybol') {
+      a.t += dt * 3; a.obj.scale.multiplyScalar(0.85); if (a.t >= 1) { scene.remove(a.obj); animler.splice(i, 1); }
+    } else if (a.tip === 'tara') {
+      a.t = Math.min(1, a.t + dt / a.sure);
+      const goz = D.bas.localToWorld(V(0, 0.48, 0.5)); const hedef = D.durak.clone();
+      const T = D.tarama; const L = goz.distanceTo(hedef);
+      T.position.copy(goz).lerp(hedef, 0.5); T.scale.set(1, L, 1); T.lookAt(hedef); T.rotateX(Math.PI / 2);
+      T.material.opacity = 0.28 * Math.sin(Math.PI * a.t) + 0.05;
+      if (a.t >= 1) { T.visible = false; animler.splice(i, 1); if (a.bitti) a.bitti(); }
+    } else if (a.tip === 'atis') {
+      a.t = Math.min(1, a.t + dt / 0.5); D.kolR.rotation.x = -Math.sin(Math.PI * a.t) * 1.4; if (a.t >= 1) { D.kolR.rotation.x = 0; animler.splice(i, 1); }
     }
   }
-  // ızgara
-  g.strokeStyle = renkAlfa(cz.startsWith('#') ? cz : '#cfdcd6', 0.9); g.lineWidth = 1;
-  for (let k = 0; k <= 4; k++) { g.beginPath(); g.moveTo(X(k / 4), PAD); g.lineTo(X(k / 4), H - PAD); g.stroke(); g.beginPath(); g.moveTo(PAD, Y(k / 4)); g.lineTo(W - PAD, Y(k / 4)); g.stroke(); }
-  const r = Math.max(7, W / 70);
-  // komşu çizgileri
-  if (vurgulu) {
-    g.setLineDash([6, 5]); g.lineWidth = Math.max(2, W / 400); g.strokeStyle = renkVar('murekkep');
-    vurgulu.ks.forEach(x => { g.beginPath(); g.moveTo(X(vurgulu.p.s), Y(vurgulu.p.c)); g.lineTo(X(x.h.s), Y(x.h.c)); g.stroke(); });
-    g.setLineDash([]);
-    if (vurgulu.ks.length) { const R0 = vurgulu.ks[vurgulu.ks.length - 1].d; g.beginPath(); g.strokeStyle = renkAlfa(renkVar('vurgu').startsWith('#') ? renkVar('vurgu') : '#ff7a3d', 0.7); g.lineWidth = 2; g.ellipse(X(vurgulu.p.s), Y(vurgulu.p.c), R0 * (W - PAD * 2) + r, R0 * (H - PAD * 2) + r, 0, 0, Math.PI * 2); g.stroke(); }
-  }
-  // örnekler
-  hafiza.forEach(h => { const yakin = vurgulu && vurgulu.ks.some(x => x.h === h); ikon({ c: h.c, gorunum: h.gorunum }, X(h.s), Y(h.c), yakin ? r * 1.35 : r, renkVar(h.etiket)); });
-  // sorulan meyve
-  if (vurgulu) {
-    const x = X(vurgulu.p.s), y = Y(vurgulu.p.c);
-    g.fillStyle = renkVar('yuzey'); g.strokeStyle = renkVar('murekkep'); g.lineWidth = 3;
-    g.beginPath(); g.arc(x, y, r * 1.6, 0, Math.PI * 2); g.fill(); g.stroke();
-    g.fillStyle = renkVar('murekkep'); g.font = `700 ${Math.round(r * 2)}px Fredoka, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('?', x, y + 1);
-  }
-  if (!hafiza.length) {
-    g.fillStyle = renkVar('soluk'); g.font = `700 ${Math.round(W / 34)}px Nunito, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillText('Hafıza boş. Henüz hiç örnek yok.', W / 2, H / 2);
-  }
-}
-function lejant() {
-  $('#lejant').innerHTML = TURLER.map(t => `<span style="--k:var(--${t})"><i></i>${TUR[t].ad} <span class="kucuk">(${hafiza.filter(h => h.etiket === t).length})</span></span>`).join('');
-}
-function hafizaEkle(m, etiket) { hafiza.push({ s: m.s, c: m.c, etiket, gorunum: m.tur }); lejant(); ciz(); }
-
-// ---------- robot yüzü ----------
-function yuz(durum) {
-  const y = $('#rYuz');
-  const goz = {
-    normal: '<rect x="38" y="48" width="12" height="14" rx="4"/><rect x="70" y="48" width="12" height="14" rx="4"/>',
-    mutlu: '<path d="M37 58 Q44 48 51 58" fill="none" stroke-width="4" stroke-linecap="round"/><path d="M69 58 Q76 48 83 58" fill="none" stroke-width="4" stroke-linecap="round"/>',
-    dusun: '<rect x="38" y="52" width="12" height="6" rx="3"/><rect x="70" y="46" width="12" height="14" rx="4"/>',
-    sasir: '<circle cx="44" cy="55" r="8" fill="none" stroke-width="4"/><circle cx="76" cy="55" r="8" fill="none" stroke-width="4"/>'
-  }[durum];
-  const agiz = { normal: '<path d="M52 72 Q60 76 68 72" fill="none" stroke-width="3" stroke-linecap="round"/>', mutlu: '<path d="M48 70 Q60 80 72 70" fill="none" stroke-width="3" stroke-linecap="round"/>', dusun: '<path d="M52 74 L68 72" fill="none" stroke-width="3" stroke-linecap="round"/>', sasir: '<circle cx="60" cy="74" r="4" fill="none" stroke-width="3"/>' }[durum];
-  y.innerHTML = goz + agiz;
-  $('#rAnten').style.fill = durum === 'dusun' ? 'var(--limon)' : 'var(--vurgu)';
-}
-function konus(satirlar, durum = 'normal') { $('#balon').innerHTML = (Array.isArray(satirlar) ? satirlar : [satirlar]).map(s => `<p>${s}</p>`).join(''); yuz(durum); }
-
-// ---------- meyve bandı ----------
-let simdiki = null;
-function bandaKoy(m, etiket) {
-  simdiki = m;
-  const k = $('#meyveKutu'); k.classList.remove('gel'); void k.offsetWidth; if (!AZ) k.classList.add('gel');
-  $('#meyveYer').innerHTML = m ? meyveSVG(m, 190) : '';
-  $('#meyveEtiket').textContent = etiket || 'MEYVE BANDI';
-  if (m) {
-    $('#gUzun').textContent = m.s.toFixed(2); $('#gUzunI').style.left = (m.s * 100) + '%';
-    $('#gRenk').textContent = m.c.toFixed(2) + ' · ' + renkAdi(m.c); $('#gRenkI').style.left = (m.c * 100) + '%';
-  } else { $('#gUzun').textContent = '–'; $('#gRenk').textContent = '–'; }
 }
 
-// ---------- adımlar ----------
-let adim = 0;
+// =====================================================================
+//   KONTROL, KAMERA, DÖNGÜ
+// =====================================================================
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = 0.08; controls.minDistance = 5; controls.maxDistance = 28; controls.maxPolarAngle = Math.PI * 0.48;
+controls.minAzimuthAngle = -0.9; controls.maxAzimuthAngle = 0.9; controls.enablePan = false;
+const KAM = { kam: V(0.0, 4.4, 16.2), hedef: V(0.0, 2.1, -0.4) };
+const KT = { aktif: false };
+let DAR = innerWidth <= 820;
+const kamPos = (p, h) => DAR ? h.clone().add(p.clone().sub(h).multiplyScalar(1.7)) : p.clone();
+function kameraGit(p, h, sure = 1.4) { KT.aktif = true; KT.t = 0; KT.sure = AZ ? 0.01 : sure; KT.pA = camera.position.clone(); KT.hA = controls.target.clone(); KT.pB = kamPos(p, h); KT.hB = h.clone(); }
+function boyutla() {
+  const w = innerWidth, h = innerHeight; renderer.setSize(w, h); camera.aspect = w / h;
+  const dar = w <= 820; DAR = dar; camera.fov = dar ? 50 : 40; controls.maxDistance = dar ? 48 : 28;
+  const yan = dar ? 0 : Math.min(w * 0.34, 520);
+  const alt = dar ? h * 0.52 : 0;
+  camera.setViewOffset(w, h, -yan / 2, alt / 2, w, h);
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', boyutla);
+const saat = new THREE.Clock();
+function dongu() {
+  const dt = Math.min(params.has('test') ? 1.5 : 0.05, saat.getDelta()); zaman += dt;
+  gokMat.uniforms.uTime.value = zaman;
+  if (KT.aktif) { KT.t = Math.min(1, KT.t + dt / KT.sure); const e = ease(KT.t); camera.position.lerpVectors(KT.pA, KT.pB, e); controls.target.lerpVectors(KT.hA, KT.hB, e); camera.lookAt(controls.target); if (KT.t >= 1) KT.aktif = false; }
+  else controls.update();
+  animGuncelle(dt);
+  if (D.bantDoku && bantHareket) D.bantDoku.offset.x -= dt * 1.2;
+  // Çıtır'ın canlılığı
+  D.bas.rotation.z = Math.sin(zaman * 1.3) * 0.04; D.govde.position.y = 0.4 + Math.sin(zaman * 2.2) * 0.015;
+  D.anten.material.emissiveIntensity = DURUM.dusunuyor ? (Math.sin(zaman * 12) > 0 ? 1.5 : 0.2) : 0.4 + Math.sin(zaman * 2) * 0.2;
+  D.isikl.forEach((l, i) => l.material.emissiveIntensity = 0.5 + 0.5 * Math.sin(zaman * 3 + i * 2));
+  // panodaki işaretlerin doğuşu
+  for (const g of D.isaretler.children) { const s = Math.min(1, (zaman - g.userData.dogum) * 4 + 0.01); g.scale.setScalar(s < 1 ? s * (1.3 - 0.3 * s) : 1); }
+  for (const g of D.cizgiler.children) if (g.userData.nabiz) g.scale.setScalar(1 + Math.sin(zaman * 5) * 0.08);
+  if (bantMeyve && !animler.some(a => a.obj === bantMeyve)) bantMeyve.rotation.y += dt * 0.6;
+  renderer.render(scene, camera);
+  requestAnimationFrame(dongu);
+}
+// panoya dokununca hayalî meyve
+const ray = new THREE.Raycaster(); const fare = new THREE.Vector2(); let basX = 0, basY = 0;
+canvas.addEventListener('pointerdown', (e) => { basX = e.clientX; basY = e.clientY; if (KT.aktif) KT.aktif = false; });
+canvas.addEventListener('pointerup', (e) => {
+  if (Math.hypot(e.clientX - basX, e.clientY - basY) > 6) return;
+  fare.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  ray.setFromCamera(fare, camera);
+  const hit = ray.intersectObject(D.panoG.children[0], false)[0];
+  if (hit) { const l = D.panoG.worldToLocal(hit.point.clone()); const H = D.harita; const s = (l.x - H.x0) / (H.x1 - H.x0), c = (H.y1 - l.y) / (H.y1 - H.y0); if (s >= 0 && s <= 1 && c >= 0 && c <= 1) hayalSor({ tur: 'hayal', s, c }); return; }
+  for (const t of TURLER) { const S = D.sepetler[t]; const hs = ray.ray.distanceToPoint(V(S.x, 0.4, S.z)); if (hs < 0.7 && adim === 1) { etiketle(t); return; } }
+});
+
+// =====================================================================
+//   DERS AKIŞI
+// =====================================================================
+const DURUM = { dusunuyor: false, mesgul: false };
+let adim = 0, karne = { d: 0, y: 0 }, aktifDeney = -1, simdiki = null;
+function konus(satirlar, durum = 'normal') { $('#balon').innerHTML = '<div class="kim"><i></i>Çıtır</div>' + (Array.isArray(satirlar) ? satirlar : [satirlar]).map(s => `<p>${s}</p>`).join(''); yuzCiz(durum); }
+function bildir(m) { const b = $('#bildirim'); b.textContent = m; b.classList.add('gor'); clearTimeout(bildir.z); bildir.z = setTimeout(() => b.classList.remove('gor'), 4000); }
 const btn = (metin, cls, fn, dis) => { const b = document.createElement('button'); b.className = 'btn ' + (cls || ''); b.innerHTML = metin; b.onclick = fn; if (dis) b.disabled = true; return b; };
-function adimBar() {
-  $('#adimlar').innerHTML = '';
-  METIN.adimlar.forEach((a, i) => { const b = document.createElement('button'); b.className = 'adim'; b.innerHTML = `<span class="no">${i + 1}</span>${a}`; if (i === adim) b.setAttribute('aria-current', 'step'); b.onclick = () => adimaGit(i); $('#adimlar').appendChild(b); });
-}
-function adimaGit(i) { adim = i; vurgulu = null; adimBar(); [tanis, ogret, sina, deney, ozet][i](); ciz(); }
 const kontrol = $('#kontrol');
+function adimBar() { const n = $('#adimlar'); n.innerHTML = ''; M.adimlar.forEach((a, i) => { const b = document.createElement('button'); b.className = 'adim'; b.innerHTML = `<span class="no">${i + 1}</span>${a}`; if (i === adim) b.setAttribute('aria-current', 'step'); b.onclick = () => adimaGit(i); n.appendChild(b); }); }
+function adimaGit(i) { adim = i; komsuCiz(null); adimBar(); [tanis, ogret, sina, deney, ozet][i](); }
+const sayilarMetni = (t) => TURLER.filter(x => t.ks.some(k => k.h.etiket === x)).map(x => `${t.ks.filter(k => k.h.etiket === x).length} ${tr(AD[x])}`).join(', ');
 
 function tanis() {
-  bandaKoy(null); konus(METIN.tanis, 'normal');
-  kontrol.innerHTML = '';
+  bandaGetir(null); konus(M.tanis); kontrol.innerHTML = '';
   const e = document.createElement('div'); e.className = 'eylem';
   e.append(btn('Bir meyve getir', 'ana', () => {
-    bandaKoy(meyveUret(rastgeleTur()));
-    if (!hafiza.length) { konus(METIN.tanisBilmiyor, 'sasir'); e.innerHTML = ''; e.append(btn('Çıtır\'a öğret →', 'ana', () => adimaGit(1))); }
-    else { const t = tahmin(simdiki); vurgulu = { p: simdiki, ks: t.ks }; ciz(); konus(`Bence bu bir <b>${TUR[t.tur].ad.toLocaleLowerCase('tr-TR')}</b>. Hafızamda ${hafiza.length} örnek var.`, 'mutlu'); }
+    simdiki = meyveUret(rastgeleTur());
+    bandaGetir(simdiki, '', () => tara(() => {
+      if (!hafiza.length) { konus(M.tanisBilmiyor, 'sasir'); e.innerHTML = ''; e.append(btn("Çıtır'a öğret →", 'ana', () => adimaGit(1))); }
+      else { const t = tahmin(simdiki); komsuCiz(simdiki, t.ks); konus(`Bence bu bir <b>${tr(AD[t.tur])}</b>. Beynimde ${hafiza.length} örnek var.`, 'mutlu'); }
+    }));
   }));
   kontrol.append(e);
 }
-
+function etiketle(t) {
+  if (!simdiki || DURUM.mesgul) return;
+  DURUM.mesgul = true;
+  const m = simdiki; simdiki = null;
+  const kayit = { s: m.s, c: m.c, etiket: t, gorunum: m.tur };
+  animler.push({ tip: 'atis', t: 0 });
+  if (bantMeyve) { scene.remove(bantMeyve); bantMeyve = null; }
+  sepeteKoy(t, m, true, D.durak.clone());
+  const S = D.sepetler[t];
+  setTimeout(() => kivilcim(V(S.x, 0.9, S.z), D.haritaXY(m.s, m.c), () => { hafiza.push(kayit); panoGuncelle(); }), AZ ? 200 : 800);
+  const n = hafiza.length + 1;
+  if (t !== m.tur) konus(M.ogretYanlis(tr(AD[t])), 'dusun');
+  else konus(M.ogretAdim[n] || M.ogretSonra, M.ogretAdim[n] ? 'mutlu' : 'normal');
+  setTimeout(() => { DURUM.mesgul = false; const ib = $('#sinaIleri'); if (ib) ib.disabled = hafiza.length < 6; if (adim === 1) sonrakiMeyve(); }, AZ ? 300 : 1100);
+}
 function ogret() {
-  konus(METIN.ogret, 'normal');
-  kontrol.innerHTML = '';
+  kameraGit(KAM.kam, KAM.hedef);
+  konus(M.ogret); kontrol.innerHTML = '';
   const sep = document.createElement('div'); sep.className = 'sepetler';
-  TURLER.forEach(t => {
-    const b = document.createElement('button'); b.className = 'sepet'; b.style.setProperty('--k', `var(--${t})`);
-    b.innerHTML = meyveSVG(meyveUret(t, { kirmizi: true }), 48) + `<span>${TUR[t].sepet}<br><span class="say" data-say="${t}"></span></span>`;
-    b.setAttribute('aria-label', `${TUR[t].sepet} sepetine koy`);
-    b.onclick = () => {
-      if (!simdiki) return;
-      hafizaEkle(simdiki, t);
-      const n = hafiza.length;
-      if (t !== simdiki.tur) konus(`Tamam, bunu <b>${TUR[t].ad.toLocaleLowerCase('tr-TR')}</b> olarak öğrendim. Sen ne dersen ona inanırım!`, 'dusun');
-      else konus(METIN.ogretAdim[n] || METIN.ogretSonra, METIN.ogretAdim[n] ? 'mutlu' : 'normal');
-      sayGuncelle(); sonrakiMeyve();
-    };
-    sep.append(b);
-  });
+  TURLER.forEach(t => { const b = document.createElement('button'); b.className = 'sepet'; b.style.setProperty('--k', RENK[t]); b.innerHTML = `${AD[t]}<span class="say" data-say="${t}"></span>`; b.setAttribute('aria-label', `${AD[t]} sepetine koy`); b.onclick = () => etiketle(t); sep.append(b); });
   const alt = document.createElement('div'); alt.className = 'eylem';
-  const ileri = btn('Beni sına →', 'ana', () => adimaGit(2), hafiza.length < 6);
-  ileri.id = 'sinaIleri';
-  alt.append(ileri, btn('Hafızayı sil', 'hafif', () => { hafiza = []; lejant(); ciz(); sayGuncelle(); konus('Hafızam silindi. Her şeyi unuttum!', 'sasir'); }));
+  const ileri = btn('Beni sına →', 'ana', () => adimaGit(2), hafiza.length < 6); ileri.id = 'sinaIleri';
+  alt.append(ileri, btn('Beyni sil', 'hafif', () => { hafizaYukle([]); konus('Beynim silindi. Her şeyi unuttum!', 'sasir'); const ib = $('#sinaIleri'); if (ib) ib.disabled = true; }));
   const hizli = document.createElement('button'); hizli.className = 'link'; hizli.textContent = 'Öğretmen: 12 örneği otomatik ekle';
-  hizli.onclick = () => { for (let i = 0; i < 12; i++) { const m = meyveUret(TURLER[i % 3]); hafizaEkle(m, m.tur); } sayGuncelle(); konus(METIN.ogretAdim[12], 'mutlu'); };
+  hizli.onclick = () => { const yeni = hafiza.slice(); for (let i = 0; i < 12; i++) { const m = meyveUret(TURLER[i % 3]); yeni.push({ s: m.s, c: m.c, etiket: m.tur, gorunum: m.tur }); } hafizaYukle(yeni); konus(M.ogretAdim[12], 'mutlu'); const ib = $('#sinaIleri'); if (ib) ib.disabled = false; };
   kontrol.append(sep, alt, hizli);
-  sayGuncelle(); sonrakiMeyve();
+  lejantGuncelle(); sonrakiMeyve();
 }
-function sayGuncelle() {
-  document.querySelectorAll('[data-say]').forEach(e => { e.textContent = hafiza.filter(h => h.etiket === e.dataset.say).length + ' örnek'; });
-  const ib = $('#sinaIleri'); if (ib) ib.disabled = hafiza.length < 6;
-}
-function sonrakiMeyve() { bandaKoy(meyveUret(rastgeleTur()), `ÖRNEK ${hafiza.length + 1}`); }
-
-let karne = { d: 0, y: 0 };
+function sonrakiMeyve() { simdiki = meyveUret(rastgeleTur()); bandaGetir(simdiki); }
 function sina() {
-  if (!hafiza.length) { konus('Hafızam boş! Önce bana birkaç örnek öğretmelisin.', 'sasir'); kontrol.innerHTML = ''; kontrol.append(btn('← Öğret', 'ana', () => adimaGit(1))); bandaKoy(null); return; }
-  konus(METIN.sina, 'normal'); bandaKoy(null, 'SINAV');
-  kontrol.innerHTML = `<div class="karne"><div><b id="kD">${karne.d}</b><span>doğru tahmin</span></div><div><b id="kY">${karne.y}</b><span>yanlış tahmin</span></div><div><b id="kH">${hafiza.length}</b><span>örnek hafızada</span></div></div><div id="sonucYer"></div>`;
+  kameraGit(V(0.6, 3.9, 13.8), V(0.6, 2.3, -0.8));
+  if (!hafiza.length) { bandaGetir(null); konus('Beynim boş! Önce bana birkaç örnek öğretmelisin.', 'sasir'); kontrol.innerHTML = ''; kontrol.append(btn('← Öğret', 'ana', () => adimaGit(1))); return; }
+  bandaGetir(null); konus(M.sina);
+  kontrol.innerHTML = `<div class="karne"><div><b id="kD">${karne.d}</b><span>doğru</span></div><div><b id="kY">${karne.y}</b><span>yanlış</span></div><div><b id="kH">${hafiza.length}</b><span>örnek</span></div></div><div id="sonucYer" style="display:grid;gap:8px"></div>`;
   const e = document.createElement('div'); e.className = 'eylem';
   e.append(btn('Yeni meyve getir', 'ana', yeniSinav), btn('Karneyi sıfırla', 'hafif', () => { karne = { d: 0, y: 0 }; $('#kD').textContent = 0; $('#kY').textContent = 0; }));
   kontrol.append(e);
 }
 function yeniSinav() {
-  const m = meyveUret(rastgeleTur());
-  bandaKoy(m, 'SINAV'); vurgulu = null; ciz();
-  konus('Düşünüyorum...', 'dusun'); $('#sonucYer').innerHTML = '';
-  setTimeout(() => {
-    const t = tahmin(m); vurgulu = { p: m, ks: t.ks }; ciz();
-    const sayilar = TURLER.filter(x => t.ks.some(k => k.h.etiket === x)).map(x => `${t.ks.filter(k => k.h.etiket === x).length} ${TUR[x].ad.toLocaleLowerCase('tr-TR')}`).join(', ');
-    const ad = TUR[t.tur].ad.toLocaleLowerCase('tr-TR');
-    const dogru = t.tur === m.tur;
-    if (dogru) karne.d++; else karne.y++;
-    $('#kD').textContent = karne.d; $('#kY').textContent = karne.y;
-    konus([`Bence bu bir <b>${ad}</b>!`, METIN.sinaNeden(t.ks.length, sayilar, ad), dogru ? METIN.sinaDogru : METIN.sinaYanlis], dogru ? 'mutlu' : 'sasir');
-    const s = document.createElement('div'); s.className = 'sonuc ' + (dogru ? 'd' : 'y');
-    s.innerHTML = `${dogru ? '✓' : '✗'} Gerçekte: ${TUR[m.tur].ad}`;
-    $('#sonucYer').append(s);
-    if (!dogru) { const b = btn(`Bunu “${TUR[m.tur].ad}” olarak öğret`, '', () => { hafizaEkle(m, m.tur); $('#kH').textContent = hafiza.length; b.disabled = true; konus('Teşekkürler! Artık buna benzeyenleri daha iyi bilirim.', 'mutlu'); }); $('#sonucYer').append(document.createElement('div'), b); }
-  }, AZ ? 150 : 850);
+  if (DURUM.mesgul) return; DURUM.mesgul = true;
+  const m = meyveUret(rastgeleTur()); komsuCiz(null); $('#sonucYer').innerHTML = '';
+  konus('Bahçeden yeni bir meyve geliyor...', 'normal');
+  bandaGetir(m, '', () => { DURUM.dusunuyor = true; konus('Ölçüyorum ve beynime bakıyorum...', 'dusun'); tara(() => setTimeout(() => {
+    DURUM.dusunuyor = false; DURUM.mesgul = false;
+    const t = tahmin(m); komsuCiz(m, t.ks); const ad = tr(AD[t.tur]); const dogru = t.tur === m.tur;
+    if (dogru) karne.d++; else karne.y++; $('#kD').textContent = karne.d; $('#kY').textContent = karne.y;
+    yuzCiz(null, t.tur);
+    konus([`Bence bu bir <b>${ad}</b>!`, M.sinaNeden(t.ks.length, sayilarMetni(t), ad), dogru ? M.sinaDogru : M.sinaYanlis], dogru ? 'mutlu' : 'sasir');
+    yuzCiz(null, t.tur); setTimeout(() => yuzCiz(dogru ? 'mutlu' : 'sasir'), 2500);
+    const s = document.createElement('div'); s.className = 'sonuc ' + (dogru ? 'd' : 'y'); s.textContent = `${dogru ? '✓' : '✗'} Gerçekte: ${AD[m.tur]}`; $('#sonucYer').append(s);
+    if (!dogru) { const b = btn(`Bunu “${AD[m.tur]}” olarak öğret`, '', () => { b.disabled = true; hafiza.push({ s: m.s, c: m.c, etiket: m.tur, gorunum: m.tur }); if (bantMeyve) { scene.remove(bantMeyve); bantMeyve = null; } sepeteKoy(m.tur, m, true); panoGuncelle(); $('#kH').textContent = hafiza.length; konus('Teşekkürler! Artık buna benzeyenleri daha iyi bilirim.', 'mutlu'); }); $('#sonucYer').append(b); }
+  }, AZ ? 100 : 500)); });
+}
+function hayalSor(m) {
+  gozGuncelle(m);
+  if (!hafiza.length) { konus('Beynim boş, bilemem! Önce bana örnek öğret.', 'sasir'); komsuCiz(null); return; }
+  const t = tahmin(m); komsuCiz(m, t.ks); const ad = tr(AD[t.tur]);
+  konus([M.hayal + ` Bence bu bir <b>${ad}</b>.`, M.sinaNeden(t.ks.length, sayilarMetni(t), ad)], 'dusun');
 }
 
-// ---------- deneyler ----------
+const kayit = (t, m) => ({ s: m.s, c: m.c, etiket: t, gorunum: m.tur });
 const DENEYLER = [
-  {
-    ad: 'Az örnek mi, çok örnek mi?',
-    aciklama: 'Çıtır\'ı önce her meyveden 1 örnekle, sonra 10 örnekle eğitip 60 yeni meyveyle sınayalım.',
+  { ad: 'Az örnek mi, çok örnek mi?', aciklama: "Çıtır'ı önce her meyveden 1 örnekle, sonra 10 örnekle eğitip 60 yeni meyveyle sınayalım.",
     calistir(alan) {
       const test = Array.from({ length: 60 }, () => meyveUret(rastgeleTur()));
       const olc = () => test.filter(m => tahmin(m).tur === m.tur).length / test.length;
-      hafiza = []; TURLER.forEach(t => { const m = meyveUret(t, t === 'elma' ? { kirmizi: true } : {}); hafiza.push({ s: m.s, c: m.c, etiket: t, gorunum: t }); });
-      const a1 = olc();
-      hafiza = []; TURLER.forEach(t => { for (let i = 0; i < 10; i++) { const m = meyveUret(t); hafiza.push({ s: m.s, c: m.c, etiket: t, gorunum: t }); } });
-      const a2 = olc();
-      alan.innerHTML = `<div class="cubukGrafik"><div class="sat"><span>3 örnek</span><div class="ic"><i></i></div><span>%${Math.round(a1 * 100)}</span></div><div class="sat"><span>30 örnek</span><div class="ic"><i></i></div><span>%${Math.round(a2 * 100)}</span></div></div><p class="kucuk">60 yeni meyveden doğru bildiklerinin yüzdesi. Haritada 30 örnekli hafızayı görüyorsun.</p>`;
-      requestAnimationFrame(() => { const i = alan.querySelectorAll('.ic i'); i[0].style.width = (a1 * 100) + '%'; i[1].style.width = (a2 * 100) + '%'; });
+      hafiza = TURLER.map(t => kayit(t, meyveUret(t, t === 'elma' ? { kirmizi: true } : {}))); const a1 = olc();
+      const cok = []; TURLER.forEach(t => { for (let i = 0; i < 10; i++) cok.push(kayit(t, meyveUret(t))); }); hafizaYukle(cok); const a2 = olc();
+      alan.innerHTML = `<div class="cg"><div class="sat"><span>3 örnek</span><div class="ic"><i></i></div><span>%${Math.round(a1 * 100)}</span></div><div class="sat"><span>30 örnek</span><div class="ic"><i></i></div><span>%${Math.round(a2 * 100)}</span></div></div><p class="kucuk">60 yeni meyveden doğru bildiklerinin yüzdesi. Panoda 30 örnekli beyni görüyorsun.</p>`;
+      requestAnimationFrame(() => { const i = alan.querySelectorAll('.ic i'); i[0].style.width = a1 * 100 + '%'; i[1].style.width = a2 * 100 + '%'; });
       konus([`Az örnekle 60 meyveden <b>${Math.round(a1 * 60)}</b> tanesini bildim, çok örnekle <b>${Math.round(a2 * 60)}</b> tanesini.`, 'Ne kadar çok örnek görürsem o kadar iyi tahmin ederim.'], 'mutlu');
-    }
-  },
-  {
-    ad: 'Hiç yeşil elma görmezse?',
-    aciklama: 'Çıtır\'a yalnızca kırmızı elmalar gösterelim. Sonra ona yeşil bir elma soralım.',
+    } },
+  { ad: 'Hiç yeşil elma görmezse?', aciklama: "Çıtır'a yalnızca kırmızı elmalar gösterelim. Sonra ona yeşil bir elma soralım.",
     calistir(alan) {
-      hafiza = []; TURLER.forEach(t => { for (let i = 0; i < 8; i++) { const m = meyveUret(t, t === 'elma' ? { kirmizi: true } : {}); hafiza.push({ s: m.s, c: m.c, etiket: t, gorunum: t }); } });
-      const soru = () => { const m = meyveUret('elma', { yesil: true }); bandaKoy(m, 'YEŞİL ELMA'); const t = tahmin(m); vurgulu = { p: m, ks: t.ks }; ciz(); return t; };
-      const t = soru();
-      const ad = TUR[t.tur].ad.toLocaleLowerCase('tr-TR');
-      konus([`Bence bu bir <b>${ad}</b>...`, t.tur === 'elma' ? 'Bildim ama çok zorlandım.' : 'Hiç yeşil elma görmediğim için onu en çok benzeyen renkteki meyvelerle karıştırdım.'], t.tur === 'elma' ? 'mutlu' : 'sasir');
+      const l = []; TURLER.forEach(t => { for (let i = 0; i < 8; i++) l.push(kayit(t, meyveUret(t, t === 'elma' ? { kirmizi: true } : {}))); }); hafizaYukle(l);
+      const sor = () => { const m = meyveUret('elma', { yesil: true }); bandaGetir(m); const t = tahmin(m); komsuCiz(m, t.ks); return t; };
+      const t = sor();
+      konus([`Bence bu bir <b>${tr(AD[t.tur])}</b>...`, t.tur === 'elma' ? 'Bildim ama çok zorlandım.' : 'Hiç yeşil elma görmediğim için onu rengi benzeyen meyvelerle karıştırdım.'], t.tur === 'elma' ? 'mutlu' : 'sasir');
       alan.innerHTML = `<p class="kucuk">Makine yalnızca gördüğü örneklerden öğrenir. Örnekler çeşitli değilse bazı şeyleri tanıyamaz. Gerçek hayatta da bir yapay zekâ yalnızca bazı insanların fotoğraflarıyla eğitilirse diğerlerini tanımakta zorlanabilir.</p>`;
       alan.append(btn('Yeşil elma örnekleri ekle ve tekrar sor', 'ana', (ev) => {
-        for (let i = 0; i < 5; i++) { const m = meyveUret('elma', { yesil: true }); hafiza.push({ s: m.s, c: m.c, etiket: 'elma', gorunum: 'elma' }); }
-        lejant(); const t2 = soru(); ev.target.disabled = true;
-        konus([`Şimdi bence bu bir <b>${TUR[t2.tur].ad.toLocaleLowerCase('tr-TR')}</b>!`, 'Çeşitli örnekler görünce doğru tahmin ettim.'], 'mutlu');
+        const yeni = hafiza.slice(); for (let i = 0; i < 5; i++) yeni.push(kayit('elma', meyveUret('elma', { yesil: true }))); hafizaYukle(yeni);
+        const t2 = sor(); ev.target.disabled = true; konus([`Şimdi bence bu bir <b>${tr(AD[t2.tur])}</b>!`, 'Çeşitli örnekler görünce doğru tahmin ettim.'], 'mutlu');
       }));
-    }
-  },
-  {
-    ad: 'Yanlış öğretirsek ne olur?',
-    aciklama: 'Muzların çoğunu yanlışlıkla “elma” sepetine koyalım. Sonra Çıtır\'a bir muz soralım.',
+    } },
+  { ad: 'Yanlış öğretirsek ne olur?', aciklama: 'Muzların çoğunu yanlışlıkla “elma” sepetine koyalım. Sonra Çıtır\'a bir muz soralım.',
     calistir(alan) {
-      hafiza = []; TURLER.forEach(t => { for (let i = 0; i < 8; i++) { const m = meyveUret(t); hafiza.push({ s: m.s, c: m.c, etiket: (t === 'muz' && i < 6) ? 'elma' : t, gorunum: t }); } });
-      const m = meyveUret('muz'); bandaKoy(m, 'MUZ'); const t = tahmin(m); vurgulu = { p: m, ks: t.ks }; ciz();
-      konus([`Bence bu bir <b>${TUR[t.tur].ad.toLocaleLowerCase('tr-TR')}</b>!`, 'Bana muzları elma diye öğrettin. Ben de öyle öğrendim.'], 'dusun');
-      alan.innerHTML = `<p class="kucuk">Haritada muz şeklindeki noktaların çoğu kırmızı çerçeveli: onlar “elma” diye etiketlendi. Etiketler yanlışsa makine de yanlış öğrenir. Etiketleri veren insanların dikkatli olması gerekir.</p>`;
-    }
-  }
+      const l = []; TURLER.forEach(t => { for (let i = 0; i < 8; i++) l.push(kayit((t === 'muz' && i < 6) ? 'elma' : t, meyveUret(t))); }); hafizaYukle(l);
+      const m = meyveUret('muz'); bandaGetir(m); const t = tahmin(m); komsuCiz(m, t.ks);
+      konus([`Bence bu bir <b>${tr(AD[t.tur])}</b>!`, 'Bana muzları elma diye öğrettin. Ben de öyle öğrendim.'], 'dusun');
+      alan.innerHTML = `<p class="kucuk">Elma sepetinde muzlar var ve panoda muz şeklindeki noktaların çoğu kırmızı halkalı. Etiketler yanlışsa makine de yanlış öğrenir; etiketleri veren insanların dikkatli olması gerekir.</p>`;
+    } }
 ];
-let aktifDeney = -1;
 function deney() {
-  konus(METIN.deneyGiris, 'normal'); bandaKoy(null, 'DENEY');
-  kontrol.innerHTML = '';
-  const d = document.createElement('div'); d.className = 'deneyler';
+  kameraGit(KAM.kam, KAM.hedef);
+  bandaGetir(null); konus(M.deneyGiris); kontrol.innerHTML = '';
   DENEYLER.forEach((x, i) => {
     const kart = document.createElement('div'); kart.className = 'deney'; if (i === aktifDeney) kart.setAttribute('aria-current', 'true');
     kart.innerHTML = `<h3>${x.ad}</h3><p>${x.aciklama}</p>`;
-    const alan = document.createElement('div'); alan.style.display = 'grid'; alan.style.gap = '8px';
-    kart.append(btn('Deneyi başlat', 'ana', () => { aktifDeney = i; document.querySelectorAll('.deney').forEach(k => k.removeAttribute('aria-current')); kart.setAttribute('aria-current', 'true'); document.querySelectorAll('.deney .sonucAlan').forEach(a => a.innerHTML = ''); x.calistir(alan); lejant(); ciz(); }), alan);
-    alan.className = 'sonucAlan';
-    d.append(kart);
+    const alan = document.createElement('div'); alan.className = 'sonucAlan'; alan.style.cssText = 'display:grid;gap:8px';
+    kart.append(btn('Deneyi başlat', 'ana', () => { aktifDeney = i; document.querySelectorAll('.deney').forEach(k => k.removeAttribute('aria-current')); kart.setAttribute('aria-current', 'true'); document.querySelectorAll('.sonucAlan').forEach(a => a.innerHTML = ''); x.calistir(alan); }), alan);
+    kontrol.append(kart);
   });
-  kontrol.append(d);
 }
-
 function ozet() {
-  bandaKoy(null, 'ÖZET');
-  konus(['Beni eğittiğin için teşekkürler! Birlikte öğrendiklerimize bir bakalım.'], 'mutlu');
-  kontrol.innerHTML = `<div class="ozet"><h2>${METIN.ozetBaslik}</h2><ol>${METIN.ozet.map(x => `<li>${x}</li>`).join('')}</ol><div class="gercek">${METIN.gercek.map(([a, b]) => `<div><b>${a}</b>${b}</div>`).join('')}</div></div>`;
-  const e = document.createElement('div'); e.className = 'eylem';
-  e.append(btn('Baştan başla', 'hafif', () => { hafiza = []; karne = { d: 0, y: 0 }; aktifDeney = -1; lejant(); adimaGit(0); }));
-  kontrol.append(e);
+  kameraGit(V(-1.5, 5.2, 16.5), V(0.5, 2.3, -0.6));
+  bandaGetir(null); konus('Beni eğittiğin için teşekkürler! Birlikte öğrendiklerimize bir bakalım.', 'mutlu');
+  kontrol.innerHTML = `<div class="ozet"><h2>${M.ozetBaslik}</h2><ol>${M.ozet.map(x => `<li>${x}</li>`).join('')}</ol><div class="gercek">${M.gercek.map(([a, b]) => `<div><b>${a}</b>${b}</div>`).join('')}</div></div>`;
+  kontrol.append(btn('Baştan başla', 'hafif', () => { hafizaYukle([]); karne = { d: 0, y: 0 }; aktifDeney = -1; adimaGit(0); }));
 }
 
-// haritaya dokununca hayalî meyve
-cv.addEventListener('click', (ev) => {
-  const r = cv.getBoundingClientRect(); const dpr = cv.width / r.width;
-  const s = kirp(((ev.clientX - r.left) * dpr - PAD) / (cv.width - PAD * 2)), c = kirp(((ev.clientY - r.top) * dpr - PAD) / (cv.height - PAD * 2));
-  const m = { tur: 'hayal', s, c };
-  bandaKoy(m, 'HAYALÎ MEYVE');
-  if (!hafiza.length) { konus('Hafızam boş, bilemem! Önce bana örnek öğret.', 'sasir'); vurgulu = null; ciz(); return; }
-  const t = tahmin(m); vurgulu = { p: m, ks: t.ks }; ciz();
-  const sayilar = TURLER.filter(x => t.ks.some(k => k.h.etiket === x)).map(x => `${t.ks.filter(k => k.h.etiket === x).length} ${TUR[x].ad.toLocaleLowerCase('tr-TR')}`).join(', ');
-  const ad = TUR[t.tur].ad.toLocaleLowerCase('tr-TR');
-  konus([METIN.hayal + ` Bence bu bir <b>${ad}</b>.`, METIN.sinaNeden(t.ks.length, sayilar, ad)], 'dusun');
-});
-$('#bolgeGoster').addEventListener('change', ciz);
-addEventListener('resize', haritaBoyut);
-matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', ciz);
-new MutationObserver(ciz).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-document.fonts?.ready.then(ciz);
+$('#dBolge').addEventListener('click', (e) => { const a = e.currentTarget.getAttribute('aria-pressed') !== 'true'; e.currentTarget.setAttribute('aria-pressed', String(a)); panoGuncelle(); });
+$('#dSifirla').addEventListener('click', () => kameraGit(KAM.kam, KAM.hedef, 1));
+$('#dKalite').addEventListener('click', (e) => { HAFIF = !HAFIF; renderer.setPixelRatio(Math.min(devicePixelRatio, HAFIF ? 1 : 1.75)); renderer.shadowMap.enabled = !HAFIF || true; gunes.shadow.mapSize.set(HAFIF ? 1024 : 2048, HAFIF ? 1024 : 2048); if (gunes.shadow.map) { gunes.shadow.map.dispose(); gunes.shadow.map = null; } e.currentTarget.textContent = 'Kalite: ' + (HAFIF ? 'Hafif' : 'Yüksek'); boyutla(); });
 
-lejant(); adimaGit(0); haritaBoyut();
-})();
+try {
+  await kur();
+  ilerle(0.9, 'Beyin panosu açılıyor…'); await bekle();
+  DAR = innerWidth <= 820; camera.position.copy(kamPos(KAM.kam, KAM.hedef)); controls.target.copy(KAM.hedef); camera.lookAt(KAM.hedef);
+  $('#dKalite').textContent = 'Kalite: ' + (HAFIF ? 'Hafif' : 'Yüksek');
+  boyutla(); panoGuncelle(); adimaGit(0);
+  ilerle(1, 'Hazır!');
+  requestAnimationFrame(dongu);
+  setTimeout(() => $('#yukleme').hidden = true, 250);
+  window.__citir = { adimaGit, hafiza: () => hafiza, etiketle, simdiki: () => simdiki };
+  window.__hazir = true;
+} catch (e) {
+  console.error(e);
+  hataGoster('Atölye kurulurken bir sorun çıktı', `<p>Sayfayı yenilemeyi dene. Sorun sürerse adresin sonuna <b>?kalite=hafif</b> ekleyebilirsin.</p><p style="font-size:14px;color:#55656d">Teknik ayrıntı: ${String(e.message || e)}</p>`);
+}
 </script>
 </body>
 </html>

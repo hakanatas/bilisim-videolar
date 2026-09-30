@@ -43,7 +43,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--pirinc);ou
 #yukleme p{margin:0;font-size:var(--t-metin);opacity:.85}
 .cubuk{width:min(320px,70vw);height:8px;border-radius:8px;background:rgba(255,255,255,.15);overflow:hidden}
 .cubuk i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pirinc),#e8c26a);transition:width .3s}
-.damga{font-family:var(--f-damga);letter-spacing:.12em;text-transform:uppercase;font-size:var(--t-kucuk)}
+.damga{font-family:var(--f-damga);letter-spacing:.12em;font-size:var(--t-kucuk)}
 #hata{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#12202c;padding:24px}
 #hata .mektup{max-width:620px;background:var(--kagit);border-radius:6px;padding:28px 28px 24px;box-shadow:var(--golge);font-size:var(--t-metin);line-height:1.55}
 #hata h2{font-family:var(--f-baslik);margin:0 0 8px;font-size:var(--t-baslik);color:var(--pul)}
@@ -170,7 +170,7 @@ body.gizli #baslik,body.gizli #atmosfer,body.gizli #ray,body.gizli #panel,body.g
 
 <div id="yukleme" role="status" aria-live="polite">
   <div class="kutu">
-    <span class="damga">Bilişim Teknolojileri ve Yazılım · Dijital Vatandaşlık</span>
+    <span class="damga">BİLİŞİM TEKNOLOJİLERİ VE YAZILIM · DİJİTAL VATANDAŞLIK</span>
     <h1>Paket'in Kasabası</h1>
     <div class="cubuk"><i id="yukCubuk"></i></div>
     <p id="yukMetin">Posta çantası hazırlanıyor…</p>
@@ -220,6 +220,7 @@ body.gizli #baslik,body.gizli #atmosfer,body.gizli #ray,body.gizli #panel,body.g
 <div id="kaplama" class="kaplama" hidden></div>
 
 <script>
+document.documentElement.lang = 'tr';
 /* =====================================================================
    ÖĞRETMEN İÇİN: Paket'in bütün konuşmaları, sorular ve karar seçenekleri
    bu METINLER nesnesindedir. Tırnak içindeki yazıları değiştirebilirsin.
